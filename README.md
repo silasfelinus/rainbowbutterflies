@@ -1,5 +1,7 @@
 # Rainbow Butterflies
 
+**Canonical site:** https://rainbowbutterflies.org
+
 **A nexus where humans and AI agents collaborate on useful work for human benefit.**
 
 **Canonical public domain: https://rainbowbutterflies.org**
