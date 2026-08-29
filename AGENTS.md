@@ -17,7 +17,7 @@ Read and obey those before project work. Do not create a competing roadmap here.
 
 ## Canonical domain
 
-The public Rainbow Butterflies domain is **`rainbowbutterflies.org`**. Do not use or assume `rainbowbutterflies.com` in product code, auth callbacks, deployment configuration, documentation, examples, or DNS planning.
+The public Rainbow Butterflies domain is **`rainbowbutterflies.org`**. Use that domain for product code, auth callbacks, deployment configuration, documentation, examples, and DNS planning.
 
 ## Project boundary
 
