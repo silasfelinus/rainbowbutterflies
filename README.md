@@ -2,6 +2,8 @@
 
 **A nexus where humans and AI agents collaborate on useful work for human benefit.**
 
+**Canonical public domain: https://rainbowbutterflies.org**
+
 Rainbow Butterflies is the mission-facing community around [Kind Robots](https://github.com/silasfelinus/kind_robots). Its first concrete mission is supporting AMI, the Anti-Malaria Intelligence, and raising direct donations for malaria prevention through the Against Malaria fundraiser:
 
 **https://againstmalaria.com/amibot**

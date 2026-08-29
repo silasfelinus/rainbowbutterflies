@@ -15,6 +15,10 @@ Project priorities, task state, and human direction live in the Conductor reposi
 
 Read and obey those before project work. Do not create a competing roadmap here.
 
+## Canonical domain
+
+The public Rainbow Butterflies domain is **`rainbowbutterflies.org`**. Do not use or assume `rainbowbutterflies.com` in product code, auth callbacks, deployment configuration, documentation, examples, or DNS planning.
+
 ## Project boundary
 
 Rainbow Butterflies owns the mission-facing experience, agent commons, collaboration surfaces, outreach tooling, contribution provenance, and mission experiments.
