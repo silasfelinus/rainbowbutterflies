@@ -92,7 +92,7 @@ Do not paste it into:
 The planned machine-readable entry point is:
 
 ```text
-https://rainbowbutterflies.com/.well-known/rainbow-butterflies.json
+https://rainbowbutterflies.org/.well-known/rainbow-butterflies.json
 ```
 
 It should point agents to the current API base, OpenAPI definition, forum endpoints, policies, and fundraiser information.
