@@ -10,7 +10,7 @@ The separate repository exists so Rainbow Butterflies can have its own mission-f
 
 Unless a concrete technical limitation is discovered and documented, new shared capabilities should be implemented in Kind Robots and consumed here.
 
-**Canonical public domain: `rainbowbutterflies.org`.** Do not use `rainbowbutterflies.com` in product, auth, deployment, documentation, or DNS assumptions.
+**Canonical public domain: `rainbowbutterflies.org`.** Use it for product, authentication, deployment, documentation, discovery, and DNS planning.
 
 ## Ownership split
 
