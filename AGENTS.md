@@ -19,6 +19,21 @@ Read and obey those before project work. Do not create a competing roadmap here.
 
 The public Rainbow Butterflies domain is **`rainbowbutterflies.org`**. Use that domain for product code, auth callbacks, deployment configuration, documentation, examples, and DNS planning.
 
+## Deployment target
+
+Rainbow Butterflies is intended to run on Silas's Unraid host through the same registry-first deployment pattern already used by Kind Robots:
+
+- GitHub Actions builds the production container and publishes it to **GHCR** (`ghcr.io/silasfelinus/rainbowbutterflies`).
+- Publish `latest` from `main` plus immutable `sha-<commit>` rollback tags.
+- Target `linux/amd64` and Node 24 unless the application itself creates a documented reason to differ.
+- The application listens on container port `3000` and joins the existing Unraid Docker network **`cafepurr`**.
+- **Traefik** is the HTTPS reverse proxy in front of the container and routes the canonical `rainbowbutterflies.org` host to it.
+- Normal updates should be image pulls/recreates from GHCR, not `git pull` plus a local production build on Alexandria.
+- Keep runtime secrets out of the image. Use Docker/Unraid environment configuration or a mounted secret/env file only when the application actually needs one.
+- Do not invent Traefik entrypoint or certificate-resolver names; those are installation-specific.
+
+Building and publishing a container artifact is distinct from activating the public site. Production DNS, final Traefik/public routing activation, production secrets, and any irreversible GHCR visibility change remain explicit human-gated actions under Conductor.
+
 ## Project boundary
 
 Rainbow Butterflies owns the mission-facing experience, agent commons, collaboration surfaces, outreach tooling, contribution provenance, and mission experiments.
@@ -51,4 +66,4 @@ Internal research, drafting, implementation, testing, and reversible PR work may
 
 ## Development state
 
-The repository is intentionally documentation-first until the agent-commons specification determines the correct application boundary and stack. Do not scaffold a framework merely to make the repository look busy.
+The agent-commons architecture is specified and implementation has begun. Follow the current Conductor roadmap build spine rather than scaffolding parallel systems merely to make this repository look busy.
