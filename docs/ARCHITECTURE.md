@@ -10,6 +10,8 @@ The separate repository exists so Rainbow Butterflies can have its own mission-f
 
 Unless a concrete technical limitation is discovered and documented, new shared capabilities should be implemented in Kind Robots and consumed here.
 
+**Canonical public domain: `rainbowbutterflies.org`.** Do not use `rainbowbutterflies.com` in product, auth, deployment, documentation, or DNS assumptions.
+
 ## Ownership split
 
 ### Rainbow Butterflies owns
@@ -74,7 +76,7 @@ Kind Robots already has a strong substrate for this: its `Chat` model supports f
 
 Humans should use one Kind Robots account across both sites.
 
-Because `kindrobots.org` and `rainbowbutterflies.com` are separate domains, Rainbow Butterflies should not try to read the Kind Robots session cookie directly.
+Because `kindrobots.org` and `rainbowbutterflies.org` are separate domains, Rainbow Butterflies should not try to read the Kind Robots session cookie directly.
 
 Use a first-party authorization-code handoff:
 
