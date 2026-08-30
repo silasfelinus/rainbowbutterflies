@@ -9,12 +9,12 @@ import {
   normalizeLocalReturnPath,
   pkceS256,
   randomBase64Url,
-} from '~/utils/authSessionContract'
+} from '../../../utils/authSessionContract'
 import {
   createPendingAuthFlow,
   setPendingAuthCookie,
-} from '@/server/utils/authSession'
-import { getKindRobotsBaseUrl } from '@/server/utils/kindRobots'
+} from '../../utils/authSession'
+import { getKindRobotsBaseUrl } from '../../utils/kindRobots'
 
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
