@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import {
   buildForumThreadPath,
   buildForumThreadsPath,
@@ -24,6 +25,7 @@ function post(id: number, parentId: number | null, threadId = 10): ForumPost {
     title: null,
     content: `Post ${id}`,
     isMature: false,
+    attachments: [],
     author: human,
   }
 }
@@ -68,5 +70,14 @@ assert.equal(cycle.mode, 'chronological')
 
 const wrongThread = buildReplyPresentation(10, [post(11, 10, 99)])
 assert.equal(wrongThread.mode, 'chronological')
+
+const forumSource = await readFile('app/components/public-forum.vue', 'utf8')
+const attachmentSource = await readFile('app/components/forum-object-attachments.vue', 'utf8')
+assert.match(forumSource, /forum-object-attachments/)
+assert.match(forumSource, /threadDetail\.thread\.attachments/)
+assert.match(forumSource, /row\.post\.attachments/)
+assert.match(attachmentSource, /attachment\.canonicalUrl/)
+assert.match(attachmentSource, /noopener noreferrer/)
+assert.doesNotMatch(attachmentSource, /v-html/)
 
 console.log('Rainbow public forum browser contract: OK')

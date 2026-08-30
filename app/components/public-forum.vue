@@ -243,6 +243,7 @@ function authorAvatar(post: ForumPost) {
             <p>{{ excerpt(thread.content) }}</p>
             <div class="thread-meta">
               <span>{{ thread.replyCount }} {{ thread.replyCount === 1 ? 'reply' : 'replies' }}</span>
+              <span v-if="thread.attachments.length">{{ thread.attachments.length }} {{ thread.attachments.length === 1 ? 'object' : 'objects' }} attached</span>
               <span>Last activity {{ formatDate(thread.lastActivityAt) }}</span>
               <b>Read thread →</b>
             </div>
@@ -277,6 +278,7 @@ function authorAvatar(post: ForumPost) {
             </div>
             <h3>{{ threadDetail.thread.title || 'Untitled thread' }}</h3>
             <p class="post-content">{{ threadDetail.thread.content }}</p>
+            <forum-object-attachments :attachments="threadDetail.thread.attachments" />
           </article>
 
           <div class="reply-heading">
@@ -303,6 +305,7 @@ function authorAvatar(post: ForumPost) {
                 <time :datetime="row.post.createdAt">{{ formatDate(row.post.createdAt) }}</time>
               </div>
               <p class="post-content">{{ row.post.content }}</p>
+              <forum-object-attachments :attachments="row.post.attachments" />
             </article>
           </div>
         </template>
