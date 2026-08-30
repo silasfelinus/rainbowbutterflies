@@ -8,14 +8,14 @@ import {
   RAINBOW_AUTH_CLIENT_ID,
   evaluateAuthorizationCallback,
   type RainbowIdentity,
-} from '~/utils/authSessionContract'
+} from '../../../utils/authSessionContract'
 import {
   clearPendingAuthCookie,
   clearRainbowSessionCookie,
   readPendingAuthCookie,
   setRainbowSessionCookie,
-} from '@/server/utils/authSession'
-import { kindRobotsPost } from '@/server/utils/kindRobots'
+} from '../../utils/authSession'
+import { kindRobotsPost } from '../../utils/kindRobots'
 
 type KindRobotsExchangeResponse = {
   success: boolean
