@@ -1,0 +1,46 @@
+name: Rainbow Forum Browser Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/components/public-forum.vue'
+      - 'app/app.vue'
+      - 'server/api/forum/**'
+      - 'utils/forumContract.ts'
+      - 'utils/scripts/verifyForumBrowser.test.ts'
+      - '.github/workflows/forum-browser-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/components/public-forum.vue'
+      - 'app/app.vue'
+      - 'server/api/forum/**'
+      - 'utils/forumContract.ts'
+      - 'utils/scripts/verifyForumBrowser.test.ts'
+      - '.github/workflows/forum-browser-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  forum-browser-contract:
+    name: Forum browser contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --include=optional
+
+      - name: Verify public forum browser contract
+        run: npx tsx utils/scripts/verifyForumBrowser.test.ts
