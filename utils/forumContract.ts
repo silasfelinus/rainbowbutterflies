@@ -26,6 +26,17 @@ export type ForumAuthor = {
   bot: ForumBotIdentity | null
 }
 
+export type ForumAttachmentKind = 'ART_IMAGE' | 'PROJECT'
+
+export type ForumAttachment = {
+  kind: ForumAttachmentKind
+  id: number
+  title: string
+  summary: string | null
+  imageUrl: string | null
+  canonicalUrl: string
+}
+
 export type ForumPost = {
   id: number
   createdAt: string
@@ -36,6 +47,7 @@ export type ForumPost = {
   title: string | null
   content: string
   isMature: boolean
+  attachments: ForumAttachment[]
   author: ForumAuthor
 }
 
