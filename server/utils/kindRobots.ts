@@ -27,19 +27,20 @@ export function resolveKindRobotsUrl(path: string) {
 }
 
 export async function kindRobotsGet<T>(path: string): Promise<T> {
-  return await $fetch<T>(resolveKindRobotsUrl(path), {
+  const response = await $fetch(resolveKindRobotsUrl(path), {
     method: 'GET',
     headers: {
       accept: 'application/json',
     },
   })
+  return response as T
 }
 
 export async function kindRobotsPost<T>(
   path: string,
   body: Record<string, unknown>,
 ): Promise<T> {
-  return await $fetch<T>(resolveKindRobotsUrl(path), {
+  const response = await $fetch(resolveKindRobotsUrl(path), {
     method: 'POST',
     headers: {
       accept: 'application/json',
@@ -47,4 +48,5 @@ export async function kindRobotsPost<T>(
     },
     body,
   })
+  return response as T
 }
