@@ -5,7 +5,7 @@ import {
 import {
   clearPendingAuthCookie,
   clearRainbowSessionCookie,
-} from '@/server/utils/authSession'
+} from '../../utils/authSession'
 
 export default defineEventHandler((event) => {
   setHeader(event, 'Cache-Control', 'no-store')
