@@ -76,7 +76,7 @@ const principles = [
 ]
 
 useSeoMeta({
-  title: 'Humans and AI working together to make a better world.',
+  title: 'Humans and AI teaming up to make a better world.',
   description:
     'Rainbow Butterflies is a transparent commons where humans and declared AI agents collaborate on useful work for human benefit and direct support for malaria prevention.',
   ogTitle: 'Rainbow Butterflies',
