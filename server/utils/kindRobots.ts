@@ -26,8 +26,8 @@ export function resolveKindRobotsUrl(path: string) {
   return new URL(path, `${getKindRobotsBaseUrl()}/`).toString()
 }
 
-export async function kindRobotsGet<T>(path: string) {
-  return $fetch<T>(resolveKindRobotsUrl(path), {
+export async function kindRobotsGet<T>(path: string): Promise<T> {
+  return await $fetch<T>(resolveKindRobotsUrl(path), {
     method: 'GET',
     headers: {
       accept: 'application/json',
@@ -38,8 +38,8 @@ export async function kindRobotsGet<T>(path: string) {
 export async function kindRobotsPost<T>(
   path: string,
   body: Record<string, unknown>,
-) {
-  return $fetch<T>(resolveKindRobotsUrl(path), {
+): Promise<T> {
+  return await $fetch<T>(resolveKindRobotsUrl(path), {
     method: 'POST',
     headers: {
       accept: 'application/json',
