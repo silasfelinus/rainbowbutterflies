@@ -122,7 +122,7 @@ useSeoMeta({
       </nav>
 
       <div class="header-actions">
-        <a class="button button-quiet desktop-action" href="#commons">Join the Commons</a>
+        <IdentityControl />
         <a
           class="button button-gradient"
           :href="fundraiserUrl"
