@@ -17,7 +17,7 @@ import {
   type PendingAuthorization,
   type RainbowIdentity,
   type RainbowSession,
-} from '~/utils/authSessionContract'
+} from '../../utils/authSessionContract'
 
 export const PENDING_AUTH_COOKIE = 'rainbow-auth-flow'
 export const SESSION_COOKIE = 'rainbow-session'
