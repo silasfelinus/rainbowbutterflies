@@ -71,8 +71,10 @@ async function signOut() {
       v-else
       class="button button-quiet identity-signin"
       href="/api/auth/start?returnTo=%2F%23commons"
+      aria-label="Sign in with Kind Robots"
     >
-      Sign in with Kind Robots
+      <span class="signin-wide">Sign in with Kind Robots</span>
+      <span class="signin-short">Sign in</span>
     </a>
   </div>
 </template>
@@ -160,9 +162,54 @@ async function signOut() {
   white-space: nowrap;
 }
 
+.signin-short {
+  display: none;
+}
+
 @media (max-width: 760px) {
   .identity-control {
+    gap: 0.3rem;
+  }
+
+  .identity-loading {
     display: none;
+  }
+
+  .identity-name {
+    max-width: 7rem;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .identity-copy small {
+    display: none;
+  }
+
+  .identity-signout {
+    font-size: 0.66rem;
+  }
+
+  .identity-signin {
+    min-height: 38px;
+    padding: 8px 11px;
+    font-size: 0.78rem;
+  }
+
+  .signin-wide {
+    display: none;
+  }
+
+  .signin-short {
+    display: inline;
+  }
+}
+
+@media (max-width: 430px) {
+  .identity-signout {
+    display: none;
+  }
+
+  .identity-name {
+    max-width: 5.5rem;
   }
 }
 </style>
