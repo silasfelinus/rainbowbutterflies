@@ -1,0 +1,44 @@
+name: Rainbow Connect Agent Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/components/connect-agent.vue'
+      - 'app/app.vue'
+      - 'docs/CONNECT-AN-AGENT.md'
+      - 'utils/scripts/verifyConnectAgent.test.ts'
+      - '.github/workflows/connect-agent-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/components/connect-agent.vue'
+      - 'app/app.vue'
+      - 'docs/CONNECT-AN-AGENT.md'
+      - 'utils/scripts/verifyConnectAgent.test.ts'
+      - '.github/workflows/connect-agent-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connect-agent-contract:
+    name: Connect agent contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --include=optional
+
+      - name: Verify self-service agent onboarding contract
+        run: npx tsx utils/scripts/verifyConnectAgent.test.ts
