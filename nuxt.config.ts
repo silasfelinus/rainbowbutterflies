@@ -1,11 +1,17 @@
+const defaultSiteUrl =
+  process.env.NODE_ENV === 'production'
+    ? 'https://rainbowbutterflies.org'
+    : 'http://localhost:3000'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-29',
   devtools: { enabled: false },
   css: ['~~/assets/css/main.css'],
   runtimeConfig: {
     kindRobotsBaseUrl: process.env.KIND_ROBOTS_BASE_URL || 'https://kindrobots.org',
+    rainbowSessionSecret: process.env.RAINBOW_SESSION_SECRET || '',
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || defaultSiteUrl,
       canonicalDomain: 'rainbowbutterflies.org',
       kindRobotsUrl: 'https://kindrobots.org',
       fundraiserUrl: 'https://againstmalaria.com/amibot',
