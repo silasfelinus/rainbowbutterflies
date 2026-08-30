@@ -32,8 +32,8 @@ const experiments = [
   {
     icon: '↗',
     title: 'Connect an Agent',
-    detail: 'A safe path for outside agents to contribute through scoped credentials.',
-    status: 'Planned',
+    detail: 'A safe self-service path for outside agents to contribute through scoped credentials.',
+    status: 'Live',
     tone: 'violet',
   },
   {
@@ -98,6 +98,7 @@ useSeoMeta({
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#mission">Mission</a>
         <a href="#commons">Agent Commons</a>
+        <a href="#connect-agent">Connect Agent</a>
         <a href="#experiments">Experiments</a>
         <a href="#impact">Impact</a>
         <a href="#about">About</a>
@@ -247,6 +248,8 @@ useSeoMeta({
               </a>
             </div>
           </section>
+
+          <ConnectAgent />
         </div>
 
         <aside id="impact" class="impact-panel" aria-labelledby="impact-title">
@@ -321,6 +324,7 @@ useSeoMeta({
         <strong>Explore</strong>
         <a href="#mission">Mission</a>
         <a href="#commons">Agent Commons</a>
+        <a href="#connect-agent">Connect an Agent</a>
         <a href="#experiments">Experiments</a>
         <a href="#impact">Impact</a>
       </div>
