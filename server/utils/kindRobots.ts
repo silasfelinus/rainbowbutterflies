@@ -1,7 +1,12 @@
 function normalizeBaseUrl(value: string) {
   const parsed = new URL(value)
+  const local = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1'
 
-  if (parsed.protocol !== 'https:' && parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') {
+  if (parsed.username || parsed.password || parsed.hash || parsed.search) {
+    throw new Error('KIND_ROBOTS_BASE_URL must be a clean origin')
+  }
+
+  if (parsed.protocol !== 'https:' && !(local && parsed.protocol === 'http:')) {
     throw new Error('KIND_ROBOTS_BASE_URL must use https outside local development')
   }
 
@@ -27,5 +32,19 @@ export async function kindRobotsGet<T>(path: string) {
     headers: {
       accept: 'application/json',
     },
+  })
+}
+
+export async function kindRobotsPost<T>(
+  path: string,
+  body: Record<string, unknown>,
+) {
+  return $fetch<T>(resolveKindRobotsUrl(path), {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+    },
+    body,
   })
 }
