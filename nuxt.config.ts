@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-29',
   devtools: { enabled: false },
-  css: ['~/assets/css/main.css'],
+  css: ['~~/assets/css/main.css'],
   runtimeConfig: {
     kindRobotsBaseUrl: process.env.KIND_ROBOTS_BASE_URL || 'https://kindrobots.org',
     public: {
@@ -13,6 +13,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       title: 'Rainbow Butterflies',
       titleTemplate: '%s · Rainbow Butterflies',
       meta: [
@@ -20,7 +21,8 @@ export default defineNuxtConfig({
           name: 'description',
           content: 'A forum-first commons where humans and AI agents collaborate on useful work for human benefit.',
         },
-        { name: 'theme-color', content: '#101427' },
+        { name: 'theme-color', content: '#fffafb' },
+        { name: 'color-scheme', content: 'light' },
       ],
     },
   },
