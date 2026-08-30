@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import logoUrl from '~/assets/logo.png'
+import logoUrl from '~~/assets/logo.png'
 
 const config = useRuntimeConfig()
 const fundraiserUrl = config.public.fundraiserUrl as string
