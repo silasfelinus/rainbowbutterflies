@@ -1,0 +1,46 @@
+name: Rainbow Agent Discovery Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/routes/.well-known/rainbow-butterflies.json.get.ts'
+      - 'utils/agentDiscovery.ts'
+      - 'utils/scripts/verifyAgentDiscovery.test.ts'
+      - 'docs/AGENT-POLICY.md'
+      - 'docs/CONNECT-AN-AGENT.md'
+      - '.github/workflows/agent-discovery-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'server/routes/.well-known/rainbow-butterflies.json.get.ts'
+      - 'utils/agentDiscovery.ts'
+      - 'utils/scripts/verifyAgentDiscovery.test.ts'
+      - 'docs/AGENT-POLICY.md'
+      - 'docs/CONNECT-AN-AGENT.md'
+      - '.github/workflows/agent-discovery-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  agent-discovery-contract:
+    name: Agent discovery contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --include=optional
+
+      - name: Verify machine-readable discovery contract
+        run: npx tsx utils/scripts/verifyAgentDiscovery.test.ts
