@@ -10,52 +10,66 @@ import {
   type MissionSource,
 } from '~~/utils/missionMetricsContract'
 
-const SEEN_COOKIE = 'rb_seen'
-const VISIT_DAY_COOKIE = 'rb_visit_day'
-const ATTRIBUTION_COOKIE = 'rb_attribution'
-const YEAR_SECONDS = 365 * 24 * 60 * 60
-const ATTRIBUTION_SECONDS = 30 * 24 * 60 * 60
+const SEEN_KEY = 'rb_seen'
+const VISIT_DAY_KEY = 'rb_visit_day'
+const ATTRIBUTION_KEY = 'rb_attribution'
+const ATTRIBUTION_DAYS = 30
 
-function readCookie(name: string): string | null {
-  const prefix = `${name}=`
-  const row = document.cookie
-    .split(';')
-    .map((value) => value.trim())
-    .find((value) => value.startsWith(prefix))
+type StoredAttribution = {
+  source: MissionSource
+  campaign: MissionCampaign
+  expiresDay: string
+}
 
-  if (!row) return null
+function readStorage(key: string): string | null {
   try {
-    return decodeURIComponent(row.slice(prefix.length))
+    return localStorage.getItem(key)
   } catch {
     return null
   }
 }
 
-function writeCookie(name: string, value: string, maxAge: number): void {
-  const secure = window.location.protocol === 'https:' ? '; Secure' : ''
-  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`
+function writeStorage(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {}
+}
+
+function utcDayOffset(days: number): string {
+  const date = new Date()
+  date.setUTCHours(0, 0, 0, 0)
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
 }
 
 function storedAttribution(): {
   source: MissionSource
   campaign: MissionCampaign
 } | null {
-  const raw = readCookie(ATTRIBUTION_COOKIE)
+  const raw = readStorage(ATTRIBUTION_KEY)
   if (!raw) return null
-  const [source, campaign] = raw.split('|')
-  if (!source || !campaign) return null
-  return {
-    source: normalizeMissionSource(source),
-    campaign: normalizeMissionCampaign(campaign),
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredAttribution>
+    const today = new Date().toISOString().slice(0, 10)
+    if (!parsed.expiresDay || parsed.expiresDay < today) return null
+
+    return {
+      source: normalizeMissionSource(parsed.source),
+      campaign: normalizeMissionCampaign(parsed.campaign),
+    }
+  } catch {
+    return null
   }
 }
 
 function saveAttribution(source: MissionSource, campaign: MissionCampaign): void {
-  writeCookie(
-    ATTRIBUTION_COOKIE,
-    `${normalizeMissionSource(source)}|${normalizeMissionCampaign(campaign)}`,
-    ATTRIBUTION_SECONDS,
-  )
+  const row: StoredAttribution = {
+    source: normalizeMissionSource(source),
+    campaign: normalizeMissionCampaign(campaign),
+    expiresDay: utcDayOffset(ATTRIBUTION_DAYS),
+  }
+  writeStorage(ATTRIBUTION_KEY, JSON.stringify(row))
 }
 
 function placementForAnchor(anchor: HTMLAnchorElement): string {
@@ -114,12 +128,12 @@ export default defineNuxtPlugin(() => {
   }
 
   const today = new Date().toISOString().slice(0, 10)
-  const seenBefore = readCookie(SEEN_COOKIE) === '1'
-  const lastCountedDay = readCookie(VISIT_DAY_COOKIE)
+  const seenBefore = readStorage(SEEN_KEY) === '1'
+  const lastCountedDay = readStorage(VISIT_DAY_KEY)
 
   if (lastCountedDay !== today) {
-    writeCookie(SEEN_COOKIE, '1', YEAR_SECONDS)
-    writeCookie(VISIT_DAY_COOKIE, today, YEAR_SECONDS)
+    writeStorage(SEEN_KEY, '1')
+    writeStorage(VISIT_DAY_KEY, today)
     emit(seenBefore ? 'return_visit' : 'visit', 'home')
   }
 
