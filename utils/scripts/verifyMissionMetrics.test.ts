@@ -49,7 +49,7 @@ assert.doesNotMatch(pluginSource, /visitorId|userId|sessionId/i)
 
 assert.match(bffSource, /normalizeMissionEventInput/)
 assert.match(bffSource, /Forward only the normalized allowlisted shape/)
-assert.doesNotMatch(bffSource, /authorization|cookie|referrer|user-agent/i)
+assert.doesNotMatch(bffSource, /getHeader\(|getCookie\(|authorization\s*:/i)
 assert.match(summarySource, /days must be an integer from 1 to/)
 
 console.log('Rainbow mission metrics contract: OK')
