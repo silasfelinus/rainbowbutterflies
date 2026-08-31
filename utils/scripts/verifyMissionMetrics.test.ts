@@ -10,9 +10,16 @@ assert.equal(normalizeMissionDimension(' Bluesky / Launch ', 'direct'), 'bluesky
 assert.deepEqual(
   missionAttributionFromQuery({
     utm_source: 'Bluesky',
-    utm_campaign: 'Launch Week 1',
+    utm_campaign: 'Open Social Pilot',
   }),
-  { source: 'bluesky', campaign: 'launch-week-1' },
+  { source: 'bluesky', campaign: 'open-social-pilot' },
+)
+assert.deepEqual(
+  missionAttributionFromQuery({
+    utm_source: 'someone@example.com',
+    utm_campaign: 'visitor-9f8e7d6c',
+  }),
+  { source: 'other', campaign: 'other' },
 )
 assert.deepEqual(missionAttributionFromQuery({}), {
   source: 'direct',
@@ -23,14 +30,14 @@ assert.deepEqual(
     event: 'fundraiser_click',
     source: 'Newsletter',
     campaign: 'Butterfly Bounty',
-    placement: 'Hero CTA',
+    placement: 'Hero',
     visitorId: 'must-never-forward',
   }),
   {
     event: 'fundraiser_click',
     source: 'newsletter',
     campaign: 'butterfly-bounty',
-    placement: 'hero-cta',
+    placement: 'hero',
   },
 )
 
@@ -44,6 +51,8 @@ assert.match(pluginSource, /const SEEN_COOKIE = 'rb_seen'/)
 assert.match(pluginSource, /const VISIT_DAY_COOKIE = 'rb_visit_day'/)
 assert.match(pluginSource, /navigator\.sendBeacon/)
 assert.match(pluginSource, /fundraiser_click/)
+assert.match(pluginSource, /normalizeMissionSource/)
+assert.match(pluginSource, /normalizeMissionCampaign/)
 assert.doesNotMatch(pluginSource, /document\.referrer|navigator\.userAgent|fingerprint|crypto\.randomUUID/i)
 assert.doesNotMatch(pluginSource, /visitorId|userId|sessionId/i)
 
