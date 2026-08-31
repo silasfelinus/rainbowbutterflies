@@ -1,9 +1,13 @@
 import { defineNuxtPlugin, useRoute, useRuntimeConfig } from '#imports'
 import {
   missionAttributionFromQuery,
-  normalizeMissionDimension,
+  normalizeMissionCampaign,
+  normalizeMissionPlacement,
+  normalizeMissionSource,
+  type MissionCampaign,
   type MissionEventInput,
   type MissionEventType,
+  type MissionSource,
 } from '~~/utils/missionMetricsContract'
 
 const SEEN_COOKIE = 'rb_seen'
@@ -32,21 +36,24 @@ function writeCookie(name: string, value: string, maxAge: number): void {
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`
 }
 
-function storedAttribution(): { source: string; campaign: string } | null {
+function storedAttribution(): {
+  source: MissionSource
+  campaign: MissionCampaign
+} | null {
   const raw = readCookie(ATTRIBUTION_COOKIE)
   if (!raw) return null
   const [source, campaign] = raw.split('|')
   if (!source || !campaign) return null
   return {
-    source: normalizeMissionDimension(source, 'direct'),
-    campaign: normalizeMissionDimension(campaign, 'none'),
+    source: normalizeMissionSource(source),
+    campaign: normalizeMissionCampaign(campaign),
   }
 }
 
-function saveAttribution(source: string, campaign: string): void {
+function saveAttribution(source: MissionSource, campaign: MissionCampaign): void {
   writeCookie(
     ATTRIBUTION_COOKIE,
-    `${normalizeMissionDimension(source, 'direct')}|${normalizeMissionDimension(campaign, 'none')}`,
+    `${normalizeMissionSource(source)}|${normalizeMissionCampaign(campaign)}`,
     ATTRIBUTION_SECONDS,
   )
 }
@@ -85,7 +92,7 @@ export default defineNuxtPlugin(() => {
       event,
       source,
       campaign,
-      placement: normalizeMissionDimension(placement, 'unknown'),
+      placement: normalizeMissionPlacement(placement),
     }
     const payload = JSON.stringify(body)
 
