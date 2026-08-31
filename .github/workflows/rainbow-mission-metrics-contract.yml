@@ -26,11 +26,10 @@ jobs:
       - name: Set up Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: npm
+          node-version: 24
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Verify mission metrics contract
         run: npx tsx utils/scripts/verifyMissionMetrics.test.ts
