@@ -47,8 +47,11 @@ const [pluginSource, bffSource, summarySource] = await Promise.all([
   readFile('server/api/mission/summary.get.ts', 'utf8'),
 ])
 
-assert.match(pluginSource, /const SEEN_COOKIE = 'rb_seen'/)
-assert.match(pluginSource, /const VISIT_DAY_COOKIE = 'rb_visit_day'/)
+assert.match(pluginSource, /const SEEN_KEY = 'rb_seen'/)
+assert.match(pluginSource, /const VISIT_DAY_KEY = 'rb_visit_day'/)
+assert.match(pluginSource, /localStorage\.getItem/)
+assert.match(pluginSource, /localStorage\.setItem/)
+assert.doesNotMatch(pluginSource, /document\.cookie/)
 assert.match(pluginSource, /navigator\.sendBeacon/)
 assert.match(pluginSource, /fundraiser_click/)
 assert.match(pluginSource, /normalizeMissionSource/)
