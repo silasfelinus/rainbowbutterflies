@@ -13,11 +13,13 @@ The browser stores:
 
 - `rb_seen=1`, a boolean indicating that this browser has visited before;
 - `rb_visit_day=YYYY-MM-DD`, the last UTC day counted;
-- `rb_attribution=<source>|<campaign>`, sanitized campaign labels kept for up to 30 days.
+- `rb_attribution=<source>|<campaign>`, coarse campaign labels kept for up to 30 days.
 
-None of these values is a random or stable visitor id. The app does not collect `document.referrer`, user-agent strings, full browsing URLs, IP addresses, browser fingerprints, or cross-site identifiers. Source/campaign comes only from explicit `utm_source` / `utm_campaign` (or `source` / `campaign`) query values and is normalized to short lowercase labels.
+None of these values is a random or stable visitor id. The app does not collect `document.referrer`, user-agent strings, full browsing URLs, IP addresses, browser fingerprints, or cross-site identifiers.
 
-Fundraiser clicks are classified by coarse page placement (`header`, `hero`, `impact`, `footer`, or `unknown`). The link destination remains the direct Against Malaria fundraiser.
+Source/campaign comes only from explicit `utm_source` / `utm_campaign` (or `source` / `campaign`) query values. Those values are not stored verbatim: they are normalized into small checked-in vocabularies for known channel families and launch experiments. Unrecognized source or campaign text collapses to `other`, preventing arbitrary query-string text from becoming analytics metadata. Placement is likewise limited to `home`, `header`, `hero`, `impact`, `footer`, or `unknown`.
+
+Fundraiser clicks are classified by that coarse page placement. The link destination remains the direct Against Malaria fundraiser.
 
 ## BFF boundary
 
