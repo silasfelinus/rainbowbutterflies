@@ -1,0 +1,35 @@
+name: Rainbow Mission Metrics Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/plugins/mission-metrics.client.ts'
+      - 'server/api/mission/**'
+      - 'utils/missionMetricsContract.ts'
+      - 'utils/scripts/verifyMissionMetrics.test.ts'
+      - 'docs/MISSION-METRICS.md'
+      - '.github/workflows/rainbow-mission-metrics-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --include=optional
+
+      - name: Verify mission metrics contract
+        run: npx tsx utils/scripts/verifyMissionMetrics.test.ts
