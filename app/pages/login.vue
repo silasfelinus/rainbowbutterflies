@@ -5,7 +5,11 @@ import logoUrl from '~~/assets/logo.png'
 const route = useRoute()
 const mode = ref<'signin' | 'join'>('signin')
 const busy = ref(false)
-const errorMessage = ref('')
+const errorMessage = ref(
+  typeof route.query.error === 'string' && route.query.error.startsWith('google-')
+    ? 'Google sign-in did not complete. You can try again or use your username and password.'
+    : '',
+)
 
 const username = ref('')
 const email = ref('')
@@ -171,6 +175,7 @@ async function join() {
       <p class="login-footnote">
         Your account is shared across Rainbow Butterflies and Kind Robots. Rainbow handles this
         sign-in experience; Kind Robots remains the identity and API backend.
+        <a href="/privacy">Privacy</a>
       </p>
     </section>
   </main>
@@ -357,6 +362,11 @@ async function join() {
   color: #8a8091;
   font-size: 0.75rem;
   line-height: 1.45;
+}
+
+.login-footnote a {
+  color: #73558d;
+  font-weight: 800;
 }
 
 @media (max-width: 520px) {
