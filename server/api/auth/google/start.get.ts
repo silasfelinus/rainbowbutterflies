@@ -22,24 +22,39 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Pragma', 'no-cache')
 
   const query = getQuery(event)
+  const returnTo = normalizeLocalReturnPath(query.returnTo, '/')
   const state = randomBase64Url(32)
   const verifier = randomBase64Url(32)
   const flow = createPendingGoogleAuthFlow({
     state,
     verifier,
-    returnTo: normalizeLocalReturnPath(query.returnTo, '/'),
+    returnTo,
   })
 
   const configQuery = new URLSearchParams({
     client_id: RAINBOW_AUTH_CLIENT_ID,
     redirect_uri: flow.redirectUri,
   })
-  const google = await kindRobotsGet<GoogleConfigResponse>(
-    `/api/auth/first-party/google/config?${configQuery.toString()}`,
-  )
+
+  let google: GoogleConfigResponse
+  try {
+    google = await kindRobotsGet<GoogleConfigResponse>(
+      `/api/auth/first-party/google/config?${configQuery.toString()}`,
+    )
+  } catch {
+    const failed = new URLSearchParams({
+      error: 'google-service-unavailable',
+      returnTo,
+    })
+    return await sendRedirect(event, `/login?${failed.toString()}`, 302)
+  }
 
   if (!google.success || !google.clientId || google.redirectUri !== flow.redirectUri) {
-    throw new Error('Google sign-in configuration is unavailable.')
+    const failed = new URLSearchParams({
+      error: 'google-service-unavailable',
+      returnTo,
+    })
+    return await sendRedirect(event, `/login?${failed.toString()}`, 302)
   }
 
   setPendingAuthCookie(event, flow)
