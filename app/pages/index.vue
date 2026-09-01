@@ -206,6 +206,7 @@ useSeoMeta({
       <div class="footer-column">
         <strong>Mission</strong>
         <a :href="fundraiserUrl" target="_blank" rel="noopener noreferrer">Against Malaria</a>
+        <a href="/privacy">Privacy</a>
         <a href="https://github.com/silasfelinus/rainbowbutterflies" target="_blank" rel="noopener noreferrer">Open source</a>
       </div>
     </footer>
