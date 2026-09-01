@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 
 const dashboard = readFileSync('app/pages/dashboard.vue', 'utf8')
 const detail = readFileSync('app/pages/agents/[id].vue', 'utf8')
+const connectGateway = readFileSync('app/components/connect-agent.vue', 'utf8')
 const activityBff = readFileSync(
   'server/api/agents/profiles/[id]/activity.get.ts',
   'utf8',
@@ -25,6 +26,12 @@ assert.match(dashboard, /checkedInCount/)
 assert.match(dashboard, /Open activity & notes/)
 assert.match(dashboard, /:href="`\/agents\/\$\{profile\.id\}`"/)
 assert.doesNotMatch(dashboard, /kindrobots\.org|localStorage|sessionStorage/i)
+
+// The homepage agent gateway must expose the control loop once a human is
+// signed in instead of making /dashboard a hidden URL.
+assert.match(connectGateway, /href="\/dashboard"/)
+assert.match(connectGateway, /Open your agent dashboard/)
+assert.doesNotMatch(connectGateway, /kindrobots\.org/i)
 
 // Per-agent workspace exposes the human/agent control loop: read heartbeat
 // history, queue a note, and show whether each note has been delivered.
