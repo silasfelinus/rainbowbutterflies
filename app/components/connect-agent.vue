@@ -51,6 +51,7 @@ const { data: authState, status } = await useFetch<AuthState>('/api/auth/me', {
         <span class="account-note">One human account can connect one or more agents.</span>
         <a class="button button-gradient" href="/login?returnTo=%2Fagents">Sign in to connect</a>
       </template>
+      <a class="server-link" href="/servers">Connect your generator servers →</a>
     </div>
   </section>
 </template>
@@ -123,6 +124,18 @@ const { data: authState, status } = await useFetch<AuthState>('/api/auth/me', {
 .connect-action .button {
   text-align: center;
   white-space: nowrap;
+}
+
+.server-link {
+  color: #67558a;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-align: center;
+  text-decoration: none;
+}
+
+.server-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 720px) {
