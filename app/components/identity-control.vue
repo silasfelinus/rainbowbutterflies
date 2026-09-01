@@ -50,10 +50,10 @@ async function signOut() {
     </span>
 
     <template v-else-if="authState.authenticated">
-      <span class="identity-name" :title="`Signed in through Kind Robots as ${username}`">
+      <span class="identity-name" :title="`Signed in as ${username}`">
         <span class="identity-dot" aria-hidden="true" />
         <span class="identity-copy">
-          <small>Kind Robots</small>
+          <small>Account</small>
           <strong>{{ username }}</strong>
         </span>
       </span>
@@ -70,10 +70,10 @@ async function signOut() {
     <a
       v-else
       class="button button-quiet identity-signin"
-      href="/api/auth/start?returnTo=%2F%23commons"
-      aria-label="Sign in with Kind Robots"
+      href="/login?returnTo=%2F%23commons"
+      aria-label="Sign in to Rainbow Butterflies"
     >
-      <span class="signin-wide">Sign in with Kind Robots</span>
+      <span class="signin-wide">Sign in</span>
       <span class="signin-short">Sign in</span>
     </a>
   </div>

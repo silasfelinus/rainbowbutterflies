@@ -7,6 +7,7 @@ import {
   evaluateAuthorizationCallback,
   normalizeLocalReturnPath,
   normalizeRainbowCallbackUri,
+  normalizeRainbowGoogleCallbackUri,
   pkceS256,
   randomBase64Url,
   readPendingAuthorization,
@@ -32,16 +33,30 @@ assert.equal(
   'https://rainbowbutterflies.org/auth/callback',
 )
 assert.equal(
-  normalizeRainbowCallbackUri('http://localhost:3000/auth/callback'),
-  'http://localhost:3000/auth/callback',
+  normalizeRainbowGoogleCallbackUri(
+    'https://rainbowbutterflies.org/auth/google/callback',
+  ),
+  'https://rainbowbutterflies.org/auth/google/callback',
+)
+assert.equal(
+  normalizeRainbowGoogleCallbackUri(
+    'http://localhost:3000/auth/google/callback',
+  ),
+  'http://localhost:3000/auth/google/callback',
+)
+assert.equal(
+  normalizeRainbowCallbackUri(
+    'https://rainbowbutterflies.org/auth/google/callback',
+  ),
+  null,
+)
+assert.equal(
+  normalizeRainbowGoogleCallbackUri('https://rainbowbutterflies.org/auth/callback'),
+  null,
 )
 assert.equal(
   normalizeRainbowCallbackUri('https://rainbowbutterflies.org/auth/callback?code=x'),
   null,
-)
-assert.equal(
-  normalizeRainbowCallbackUri('https://evil.example/auth/callback'),
-  'https://evil.example/auth/callback',
 )
 
 const state = randomBase64Url(32)
@@ -60,6 +75,18 @@ const pending = buildPendingAuthorization({
 const signedPending = signCookiePayload(pending, secret)
 assert.deepEqual(readPendingAuthorization(signedPending, secret), pending)
 assert.equal(readPendingAuthorization(signedPending, otherSecret), null)
+
+const googlePending = buildPendingAuthorization({
+  state,
+  verifier,
+  redirectUri: 'https://rainbowbutterflies.org/auth/google/callback',
+  returnTo: '/dashboard',
+  now,
+})
+assert.equal(
+  readPendingAuthorization(signCookiePayload(googlePending, secret), secret)?.redirectUri,
+  'https://rainbowbutterflies.org/auth/google/callback',
+)
 
 const tamperedPending = `${signedPending.slice(0, -1)}${
   signedPending.endsWith('A') ? 'B' : 'A'
@@ -132,12 +159,30 @@ assert.throws(
 
 const authSessionSource = readFileSync('server/utils/authSession.ts', 'utf8')
 const identityControlSource = readFileSync('app/components/identity-control.vue', 'utf8')
-const callbackSource = readFileSync('server/routes/auth/callback.get.ts', 'utf8')
+const homeSource = readFileSync('app/pages/index.vue', 'utf8')
+const loginPageSource = readFileSync('app/pages/login.vue', 'utf8')
+const legacyCallbackSource = readFileSync('server/routes/auth/callback.get.ts', 'utf8')
+const googleStartSource = readFileSync('server/api/auth/google/start.get.ts', 'utf8')
+const googleCallbackSource = readFileSync(
+  'server/routes/auth/google/callback.get.ts',
+  'utf8',
+)
 
 assert.match(authSessionSource, /httpOnly:\s*true/)
 assert.match(authSessionSource, /sameSite:\s*'lax'/)
+assert.match(homeSource, /href:\s*'\/login\?returnTo=/)
+assert.match(loginPageSource, /Continue with Google/)
+assert.match(googleStartSource, /accounts\.google\.com\/o\/oauth2\/v2\/auth/)
+assert.match(googleStartSource, /code_challenge/)
+assert.match(googleCallbackSource, /first-party\/google\/exchange/)
+assert.match(identityControlSource, /href="\/login\?returnTo=/)
+assert.doesNotMatch(identityControlSource, /Sign in with Kind Robots|Signed in through Kind Robots/)
 assert.doesNotMatch(identityControlSource, /localStorage|sessionStorage/)
-assert.doesNotMatch(callbackSource, /localStorage|sessionStorage/)
-assert.doesNotMatch(callbackSource, /kind-session|password|apiKey|agent.?credential/i)
+assert.doesNotMatch(legacyCallbackSource, /localStorage|sessionStorage/)
+assert.doesNotMatch(googleCallbackSource, /localStorage|sessionStorage/)
+assert.doesNotMatch(googleStartSource, /GOOGLE_SECRET|googleSecret/)
+assert.doesNotMatch(googleCallbackSource, /GOOGLE_SECRET|googleSecret/)
+assert.doesNotMatch(loginPageSource, /GOOGLE_SECRET|googleSecret/)
+assert.doesNotMatch(legacyCallbackSource, /kind-session|password|apiKey|agent.?credential/i)
 
 console.log('Rainbow auth session contract OK')
