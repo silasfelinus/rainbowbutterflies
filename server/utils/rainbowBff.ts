@@ -4,6 +4,17 @@ import {
   readRainbowSessionCookie,
 } from './authSession'
 
+export function getOptionalRainbowBff(event: H3Event) {
+  const session = readRainbowSessionCookie(event)
+  const delegationToken = readRainbowDelegationCookie(event)
+  if (!session || !delegationToken) return null
+
+  return {
+    user: session.user,
+    delegationToken,
+  }
+}
+
 export function requireRainbowBff(event: H3Event) {
   const session = readRainbowSessionCookie(event)
   if (!session) {
