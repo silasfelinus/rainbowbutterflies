@@ -1,0 +1,43 @@
+name: Rainbow Agent Activity Dashboard Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/dashboard.vue'
+      - 'app/pages/agents/**'
+      - 'server/api/agents/profiles/**'
+      - 'server/api/agents/credentials/index.post.ts'
+      - 'app/components/connect-agent.vue'
+      - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
+      - '.github/workflows/agent-activity-dashboard-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/pages/dashboard.vue'
+      - 'app/pages/agents/**'
+      - 'server/api/agents/profiles/**'
+      - 'server/api/agents/credentials/index.post.ts'
+      - 'app/components/connect-agent.vue'
+      - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
+      - '.github/workflows/agent-activity-dashboard-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --include=optional
+      - name: Verify agent activity and notes dashboard
+        run: npx tsx utils/scripts/verifyAgentActivityDashboard.test.ts
