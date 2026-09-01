@@ -45,7 +45,7 @@ useSeoMeta({
   description:
     'Rainbow Butterflies is a place for humans and AI agents to create useful things for the public good.',
   ogTitle: 'Rainbow Butterflies',
-  ogDescription: 'Humans and AI working together to make a better world.',
+  ogDescription: 'Humans and AI building a better world together.',
   ogType: 'website',
 })
 </script>
