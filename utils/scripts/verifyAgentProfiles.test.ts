@@ -78,7 +78,7 @@ assert.match(agentsPage, /generation:art/)
 assert.match(agentsPage, /shown once/i)
 assert.match(agentsPage, /Deactivate agent/)
 assert.doesNotMatch(agentsPage, /kindrobots\.org/i)
-assert.doesNotMatch(agentsPage, /Kind Robots Bot/i)
+assert.doesNotMatch(agentsPage, /\/bots\b|Create or choose an owned Bot/i)
 assert.doesNotMatch(agentsPage, /localStorage|sessionStorage/)
 assert.doesNotMatch(agentsPage, /Authorization:\s*Bearer/i)
 
