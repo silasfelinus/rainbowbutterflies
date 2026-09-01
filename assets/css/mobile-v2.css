@@ -1,0 +1,397 @@
+/*
+ * Rainbow Butterflies v2 responsive guardrails and gateway surfaces.
+ *
+ * This file intentionally loads after main.css while the first-build visual system is
+ * being refactored. These rules repair concrete mobile correctness problems without
+ * papering over them with a body-only overflow hack: shrinking grid/flex children,
+ * bounding code surfaces, and changing the phone header composition are the primary fixes.
+ */
+
+html,
+body,
+#__nuxt,
+.site-shell {
+  max-width: 100%;
+}
+
+.site-header,
+.site-header > *,
+.header-actions,
+.dashboard-grid,
+.dashboard-main,
+.panel,
+.impact-panel,
+.gateway-section,
+.gateway-grid,
+.gateway-card,
+.gateway-copy,
+.gateway-content-section,
+.gateway-content-heading,
+.forum-browser,
+.forum-content,
+.thread-list,
+.reader,
+.connect-panel,
+.operator-state,
+.connect-step,
+.commons-footer,
+.site-footer,
+.footer-brand,
+.footer-column {
+  min-width: 0;
+}
+
+.hero-content,
+.panel,
+.impact-panel,
+.gateway-section,
+.gateway-content-section,
+.forum-browser,
+.connect-panel,
+.closing-banner,
+.site-footer {
+  max-width: 100%;
+}
+
+pre,
+code,
+.probe,
+.env-example {
+  max-width: 100%;
+}
+
+.probe,
+.env-example {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.thread-title,
+.thread-card p,
+.post-content,
+.panel-intro,
+.gateway-card small,
+.gateway-content-heading p,
+.connect-intro,
+.connect-step p,
+.commons-footer p,
+.footer-brand p,
+.footer-note p {
+  overflow-wrap: anywhere;
+}
+
+.gateway-section,
+.gateway-content-section {
+  margin-inline: clamp(18px, 3vw, 42px);
+}
+
+.gateway-section {
+  padding: clamp(34px, 5vw, 58px) 0 24px;
+}
+
+.gateway-heading {
+  margin-bottom: 18px;
+}
+
+.gateway-heading h2,
+.gateway-content-heading h2 {
+  margin: 0;
+  color: #242c59;
+  letter-spacing: -0.035em;
+}
+
+.gateway-heading h2 {
+  font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+}
+
+.gateway-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.gateway-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 13px;
+  min-height: 160px;
+  padding: 18px;
+  border: 1px solid rgba(69, 75, 126, 0.11);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(247, 245, 255, 0.88));
+  box-shadow: 0 10px 28px rgba(69, 72, 125, 0.06);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.gateway-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(126, 89, 208, 0.24);
+  box-shadow: 0 14px 34px rgba(69, 72, 125, 0.1);
+}
+
+.gateway-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #f0eaff, #edf7ff);
+  color: #765ed0;
+  font-weight: 900;
+}
+
+.gateway-copy {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.gateway-copy strong {
+  color: #303761;
+  font-size: 1rem;
+}
+
+.gateway-copy small {
+  color: #737a94;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.gateway-copy b {
+  align-self: end;
+  margin-top: auto;
+  padding-top: 7px;
+  color: #7252c7;
+  font-size: 0.72rem;
+}
+
+.gateway-content-section {
+  margin-top: 18px;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid rgba(69, 75, 126, 0.11);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 32px rgba(69, 72, 125, 0.06);
+}
+
+.gateway-content-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.7fr);
+  align-items: end;
+  gap: 20px;
+}
+
+.gateway-content-heading h2 {
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+}
+
+.gateway-content-heading p {
+  margin: 0;
+  color: #69708c;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.connect-wrapper {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.gateway-footer {
+  grid-template-columns: 1.5fr repeat(3, minmax(0, 1fr));
+}
+
+.gateway-hero-button {
+  min-width: min(280px, 100%);
+}
+
+/* Tablet art direction: keep the butterflies present, but let copy own the upper field. */
+@media (max-width: 980px) {
+  .hero {
+    background-size: auto 62%;
+    background-position: 64% 104%;
+  }
+
+  .hero-content {
+    padding-right: 24px;
+  }
+
+  .gateway-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gateway-content-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .gateway-footer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gateway-footer .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+ * Phone header composition is deliberately different from desktop. The first-build
+ * header tried to fit logo + full brand + account control + Donate into one row, which
+ * can force the page wider than the viewport. On phones the butterfly mark is enough;
+ * the hero retains the prominent fundraiser CTA.
+ */
+@media (max-width: 560px) {
+  .site-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    width: 100%;
+    padding-inline: 12px;
+  }
+
+  .site-header .brand {
+    width: auto;
+    min-width: 0;
+  }
+
+  .site-header .brand span {
+    display: none;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .header-actions > .button-gradient {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+  }
+
+  .identity-control {
+    max-width: min(9rem, 48vw);
+  }
+
+  .hero {
+    min-height: 640px;
+    background-size: auto 52%;
+    background-position: 61% 100%;
+  }
+
+  .hero-content {
+    width: 100%;
+    padding: 28px 16px 240px;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(2.05rem, 11.2vw, 3.05rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+
+  .hero h1 br {
+    display: none;
+  }
+
+  .hero-copy,
+  .mission-link-row {
+    max-width: 100%;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+
+  .button-large {
+    max-width: 100%;
+  }
+
+  .gateway-section,
+  .gateway-content-section {
+    width: auto;
+    max-width: calc(100% - 24px);
+    margin-inline: auto;
+  }
+
+  .gateway-section {
+    padding-top: 28px;
+  }
+
+  .gateway-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gateway-card {
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .gateway-content-section {
+    padding: 17px;
+  }
+
+  .panel,
+  .impact-panel,
+  .connect-panel {
+    width: 100%;
+  }
+
+  .forum-intro,
+  .forum-toolbar,
+  .byline,
+  .reply-heading,
+  .commons-footer,
+  .operator-state,
+  .connect-heading,
+  .connect-footer {
+    max-width: 100%;
+  }
+
+  .api-pill,
+  .soft-label,
+  .live-badge {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .site-footer {
+    width: 100%;
+  }
+
+  .gateway-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .gateway-footer .footer-brand {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .header-actions > .button-gradient {
+    display: none;
+  }
+
+  .identity-control {
+    max-width: 100%;
+  }
+
+  .hero {
+    min-height: 620px;
+    background-size: auto 48%;
+    background-position: 59% 100%;
+  }
+
+  .hero-content {
+    padding-inline: 14px;
+    padding-bottom: 220px;
+  }
+
+  .mission-rule {
+    width: 28px;
+  }
+}

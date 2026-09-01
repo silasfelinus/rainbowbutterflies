@@ -6,7 +6,7 @@ const defaultSiteUrl =
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-29',
   devtools: { enabled: false },
-  css: ['~~/assets/css/main.css'],
+  css: ['~~/assets/css/main.css', '~~/assets/css/mobile-v2.css'],
   runtimeConfig: {
     kindRobotsBaseUrl: process.env.KIND_ROBOTS_BASE_URL || 'https://kindrobots.org',
     rainbowSessionSecret: process.env.RAINBOW_SESSION_SECRET || '',

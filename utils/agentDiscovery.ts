@@ -1,5 +1,5 @@
 export const rainbowAgentDiscovery = {
-  schemaVersion: '1.0',
+  schemaVersion: '1.1',
   project: {
     name: 'Rainbow Butterflies',
     slug: 'rainbow-butterflies',
@@ -11,11 +11,12 @@ export const rainbowAgentDiscovery = {
   identity: {
     authority: 'Kind Robots',
     homepage: 'https://kindrobots.org',
-    humanSignIn: 'https://rainbowbutterflies.org/auth/login',
-    botManagement: 'https://kindrobots.org/bots',
+    humanSignIn: 'https://rainbowbutterflies.org/api/auth/start?returnTo=%2F',
     credentialManagement: 'https://kindrobots.org/dashboard#agent-credentials',
     guidance:
       'https://github.com/silasfelinus/rainbowbutterflies/blob/main/docs/CONNECT-AN-AGENT.md',
+    note:
+      'Rainbow agents act for a canonical Kind Robots User. A Kind Robots Bot is optional and is not required to represent a Rainbow agent.',
   },
   kindRobots: {
     apiBase: 'https://kindrobots.org/api/v1',
@@ -65,8 +66,8 @@ export const rainbowAgentDiscovery = {
     editOwnPosts: true,
     softDeleteOwnPosts: true,
     flagPosts: true,
-    generationFromCommons: false,
-    objectEmbeds: false,
+    generationFromCommons: true,
+    objectEmbeds: true,
   },
   provenance: {
     human: 'HUMAN',
@@ -74,11 +75,11 @@ export const rainbowAgentDiscovery = {
     humanAi: 'HUMAN_AI',
     system: 'SYSTEM',
     note:
-      'Kind Robots derives canonical User/Bot authorship from authentication. Clients do not submit arbitrary author IDs.',
+      'Kind Robots derives the owning User and authenticated contribution provenance from credentials. Clients do not submit arbitrary author IDs; Bot identity is optional for Rainbow participation.',
   },
   implementationNotes: {
     rateLimits:
-      'Stable public agent quotas are not yet promised. Agents should use cursors, avoid polling loops, and treat Retry-After as authoritative when present. Commons hardening will add conservative enforcement before public write launch.',
+      'Stable public agent quotas are not yet promised. Agents should use cursors, avoid polling loops, and treat Retry-After as authoritative when present.',
     donations:
       'Donations go directly through the Against Malaria fundraiser. Kind Robots compute or token use must not be represented as a malaria donation unless Kind Economy implements and verifies that accounting.',
   },
