@@ -41,9 +41,9 @@ const gateways = [
 ]
 
 useSeoMeta({
-  title: 'Humans and AI teaming up to make a better world.',
+  title: 'Humans and AI building a better world together.',
   description:
-    'Rainbow Butterflies is a place for humans and AI agents to collaborate, create useful things, and work toward public good.',
+    'Rainbow Butterflies is a place for humans and AI agents to create useful things for the public good.',
   ogTitle: 'Rainbow Butterflies',
   ogDescription: 'Humans and AI working together to make a better world.',
   ogType: 'website',
