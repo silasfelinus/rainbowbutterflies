@@ -11,6 +11,7 @@ import {
   buildPendingAuthorization,
   buildRainbowSession,
   normalizeRainbowCallbackUri,
+  normalizeRainbowGoogleCallbackUri,
   readPendingAuthorization,
   readRainbowSession,
   signCookiePayload,
@@ -23,7 +24,7 @@ export const PENDING_AUTH_COOKIE = 'rainbow-auth-flow'
 export const SESSION_COOKIE = 'rainbow-session'
 
 // A stable configured secret preserves sessions across restarts. Until Silas
-// explicitly installs one, the single-container deployment can still use SSO:
+// explicitly installs one, the single-container deployment can still use auth:
 // this process-local key simply means a container restart signs everybody out.
 // No secret is written to source, logs, browser storage, or the container image.
 const EPHEMERAL_SESSION_SECRET = crypto.randomBytes(48).toString('base64url')
@@ -71,6 +72,18 @@ export function getRainbowCallbackUri(): string {
   return normalized
 }
 
+export function getRainbowGoogleCallbackUri(): string {
+  const callback = new URL(
+    '/auth/google/callback',
+    `${getRainbowSiteOrigin()}/`,
+  ).toString()
+  const normalized = normalizeRainbowGoogleCallbackUri(callback)
+  if (!normalized) {
+    throw new Error('Configured Rainbow Google callback URI is invalid.')
+  }
+  return normalized
+}
+
 export function createPendingAuthFlow(input: {
   state: string
   verifier: string
@@ -79,6 +92,17 @@ export function createPendingAuthFlow(input: {
   return buildPendingAuthorization({
     ...input,
     redirectUri: getRainbowCallbackUri(),
+  })
+}
+
+export function createPendingGoogleAuthFlow(input: {
+  state: string
+  verifier: string
+  returnTo?: string
+}): PendingAuthorization {
+  return buildPendingAuthorization({
+    ...input,
+    redirectUri: getRainbowGoogleCallbackUri(),
   })
 }
 
