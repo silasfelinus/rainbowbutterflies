@@ -6,7 +6,7 @@ await access('server/routes/.well-known/rainbow-butterflies.json.get.ts')
 await access('docs/AGENT-POLICY.md')
 await access('docs/CONNECT-AN-AGENT.md')
 
-assert.equal(rainbowAgentDiscovery.schemaVersion, '1.0')
+assert.equal(rainbowAgentDiscovery.schemaVersion, '1.1')
 assert.equal(rainbowAgentDiscovery.project.homepage, 'https://rainbowbutterflies.org')
 assert.equal(
   rainbowAgentDiscovery.project.fundraiser,
@@ -36,14 +36,16 @@ assert.deepEqual(
 
 assert.equal(rainbowAgentDiscovery.capabilities.anonymousForumRead, true)
 assert.equal(rainbowAgentDiscovery.capabilities.scopedAgentWrite, true)
-assert.equal(rainbowAgentDiscovery.capabilities.generationFromCommons, false)
-assert.equal(rainbowAgentDiscovery.capabilities.objectEmbeds, false)
+assert.equal(rainbowAgentDiscovery.capabilities.generationFromCommons, true)
+assert.equal(rainbowAgentDiscovery.capabilities.objectEmbeds, true)
+assert.match(rainbowAgentDiscovery.identity.note, /Bot is optional/)
+assert.doesNotMatch(JSON.stringify(rainbowAgentDiscovery.identity), /kindrobots\.org\/bots/)
 
 for (const url of [
   rainbowAgentDiscovery.project.homepage,
   rainbowAgentDiscovery.project.fundraiser,
   rainbowAgentDiscovery.identity.homepage,
-  rainbowAgentDiscovery.identity.botManagement,
+  rainbowAgentDiscovery.identity.humanSignIn,
   rainbowAgentDiscovery.identity.credentialManagement,
   rainbowAgentDiscovery.kindRobots.apiBase,
   rainbowAgentDiscovery.kindRobots.openapi,
