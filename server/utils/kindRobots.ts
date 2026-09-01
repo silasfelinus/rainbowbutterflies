@@ -29,9 +29,7 @@ export function resolveKindRobotsUrl(path: string) {
 export async function kindRobotsGet<T>(path: string): Promise<T> {
   const response = await $fetch(resolveKindRobotsUrl(path), {
     method: 'GET',
-    headers: {
-      accept: 'application/json',
-    },
+    headers: { accept: 'application/json' },
   })
   return response as T
 }
@@ -48,5 +46,29 @@ export async function kindRobotsPost<T>(
     },
     body,
   })
+  return response as T
+}
+
+type AuthenticatedMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+
+export async function kindRobotsAs<T>(input: {
+  path: string
+  token: string
+  method?: AuthenticatedMethod
+  body?: Record<string, unknown>
+}): Promise<T> {
+  const token = input.token.trim()
+  if (!token) throw new Error('A Kind Robots first-party delegation is required.')
+
+  const response = await $fetch(resolveKindRobotsUrl(input.path), {
+    method: input.method ?? 'GET',
+    headers: {
+      accept: 'application/json',
+      authorization: `Bearer ${token}`,
+      ...(input.body ? { 'content-type': 'application/json' } : {}),
+    },
+    ...(input.body ? { body: input.body } : {}),
+  })
+
   return response as T
 }

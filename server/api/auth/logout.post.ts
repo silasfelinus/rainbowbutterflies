@@ -1,9 +1,7 @@
-import {
-  defineEventHandler,
-  setHeader,
-} from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
 import {
   clearPendingAuthCookie,
+  clearRainbowDelegationCookie,
   clearRainbowSessionCookie,
 } from '../../utils/authSession'
 
@@ -13,6 +11,7 @@ export default defineEventHandler((event) => {
 
   clearPendingAuthCookie(event)
   clearRainbowSessionCookie(event)
+  clearRainbowDelegationCookie(event)
 
   return { success: true }
 })

@@ -5,10 +5,13 @@ import logoUrl from '~~/assets/logo.png'
 const route = useRoute()
 const mode = ref<'signin' | 'join'>('signin')
 const busy = ref(false)
+const googleError = typeof route.query.error === 'string' ? route.query.error : ''
 const errorMessage = ref(
-  typeof route.query.error === 'string' && route.query.error.startsWith('google-')
-    ? 'Google sign-in did not complete. You can try again or use your username and password.'
-    : '',
+  googleError === 'google-service-unavailable'
+    ? 'Google sign-in is temporarily unavailable. Try again shortly or use your username and password.'
+    : googleError.startsWith('google-')
+      ? 'Google sign-in did not complete. You can try again or use your username and password.'
+      : '',
 )
 
 const username = ref('')

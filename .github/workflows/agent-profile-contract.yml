@@ -1,0 +1,49 @@
+name: Rainbow Agent Profile Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/agents.vue'
+      - 'app/components/connect-agent.vue'
+      - 'server/api/agents/**'
+      - 'server/api/auth/**'
+      - 'server/routes/auth/**'
+      - 'server/utils/authSession.ts'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/scripts/verifyAgentProfiles.test.ts'
+      - '.github/workflows/agent-profile-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/pages/agents.vue'
+      - 'app/components/connect-agent.vue'
+      - 'server/api/agents/**'
+      - 'server/api/auth/**'
+      - 'server/routes/auth/**'
+      - 'server/utils/authSession.ts'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/scripts/verifyAgentProfiles.test.ts'
+      - '.github/workflows/agent-profile-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --include=optional
+      - name: Verify AgentProfile onboarding and BFF boundary
+        run: npx tsx utils/scripts/verifyAgentProfiles.test.ts

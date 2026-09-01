@@ -1,6 +1,10 @@
 import { defineEventHandler, readBody, setHeader, setResponseStatus } from 'h3'
 import { kindRobotsPost } from '../../utils/kindRobots'
-import { setRainbowSessionCookie } from '../../utils/authSession'
+import {
+  setRainbowDelegationCookie,
+  setRainbowSessionCookie,
+} from '../../utils/authSession'
+import { RAINBOW_AUTH_CLIENT_ID } from '../../../utils/authSessionContract'
 
 type LoginBody = {
   username?: unknown
@@ -10,10 +14,11 @@ type LoginBody = {
 type KindLoginResponse = {
   success: boolean
   message?: string
-  data?: {
+  user?: {
     id?: number
     username?: string
   }
+  delegationToken?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -29,14 +34,25 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const result = await kindRobotsPost<KindLoginResponse>('/api/auth/login', {
-      username,
-      password,
-    })
+    const result = await kindRobotsPost<KindLoginResponse>(
+      '/api/auth/first-party/password',
+      {
+        client_id: RAINBOW_AUTH_CLIENT_ID,
+        username,
+        password,
+      },
+    )
 
-    const id = Number(result.data?.id)
-    const resolvedUsername = String(result.data?.username || '').trim()
-    if (!result.success || !Number.isInteger(id) || id <= 0 || !resolvedUsername) {
+    const id = Number(result.user?.id)
+    const resolvedUsername = String(result.user?.username || '').trim()
+    const delegationToken = String(result.delegationToken || '').trim()
+    if (
+      !result.success ||
+      !Number.isInteger(id) ||
+      id <= 0 ||
+      !resolvedUsername ||
+      !delegationToken
+    ) {
       setResponseStatus(event, 401)
       return { success: false, message: result.message || 'Invalid username or password.' }
     }
@@ -45,6 +61,7 @@ export default defineEventHandler(async (event) => {
       id,
       username: resolvedUsername,
     })
+    setRainbowDelegationCookie(event, delegationToken)
 
     return {
       success: true,
