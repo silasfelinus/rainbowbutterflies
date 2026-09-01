@@ -6,6 +6,7 @@ on:
     paths:
       - 'app/components/identity-control.vue'
       - 'app/app.vue'
+      - 'app/pages/**'
       - 'server/api/auth/**'
       - 'server/routes/auth/**'
       - 'server/utils/authSession.ts'
@@ -20,6 +21,7 @@ on:
     paths:
       - 'app/components/identity-control.vue'
       - 'app/app.vue'
+      - 'app/pages/**'
       - 'server/api/auth/**'
       - 'server/routes/auth/**'
       - 'server/utils/authSession.ts'
