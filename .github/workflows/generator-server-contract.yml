@@ -21,19 +21,23 @@ on:
       - 'server/utils/rainbowBff.ts'
       - 'utils/scripts/verifyGeneratorServers.test.ts'
       - '.github/workflows/generator-server-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci --ignore-scripts
-        env:
-          CYPRESS_INSTALL_BINARY: '0'
+      - name: Install dependencies
+        run: npm install --include=optional
       - name: Verify generator server BFF and dashboard contract
         run: npx tsx utils/scripts/verifyGeneratorServers.test.ts
