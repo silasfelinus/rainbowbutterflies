@@ -1,0 +1,222 @@
+/*
+ * Rainbow Butterflies v2 responsive guardrails.
+ *
+ * This file intentionally loads after main.css while the first-build visual system is
+ * being refactored. These rules repair concrete mobile correctness problems without
+ * papering over them with a body-only overflow hack: shrinking grid/flex children,
+ * bounding code surfaces, and changing the phone header composition are the primary fixes.
+ */
+
+html,
+body,
+#__nuxt,
+.site-shell {
+  max-width: 100%;
+}
+
+.site-header,
+.site-header > *,
+.header-actions,
+.dashboard-grid,
+.dashboard-main,
+.panel,
+.impact-panel,
+.forum-browser,
+.forum-content,
+.thread-list,
+.reader,
+.connect-panel,
+.operator-state,
+.connect-step,
+.commons-footer,
+.site-footer,
+.footer-brand,
+.footer-column {
+  min-width: 0;
+}
+
+.hero-content,
+.panel,
+.impact-panel,
+.forum-browser,
+.connect-panel,
+.closing-banner,
+.site-footer {
+  max-width: 100%;
+}
+
+pre,
+code,
+.probe,
+.env-example {
+  max-width: 100%;
+}
+
+.probe,
+.env-example {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.thread-title,
+.thread-card p,
+.post-content,
+.panel-intro,
+.connect-intro,
+.connect-step p,
+.commons-footer p,
+.footer-brand p,
+.footer-note p {
+  overflow-wrap: anywhere;
+}
+
+/* Tablet art direction: keep the butterflies present, but let copy own the upper field. */
+@media (max-width: 980px) {
+  .hero {
+    background-size: auto 62%;
+    background-position: 64% 104%;
+  }
+
+  .hero-content {
+    padding-right: 24px;
+  }
+}
+
+/*
+ * Phone header composition is deliberately different from desktop. The first-build
+ * header tried to fit logo + full brand + account control + Donate into one row, which
+ * can force the page wider than the viewport. On phones the butterfly mark is enough;
+ * the hero retains the prominent fundraiser CTA.
+ */
+@media (max-width: 560px) {
+  .site-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    width: 100%;
+    padding-inline: 12px;
+  }
+
+  .site-header .brand {
+    width: auto;
+    min-width: 0;
+  }
+
+  .site-header .brand span {
+    display: none;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .header-actions > .button-gradient {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+  }
+
+  .identity-control {
+    max-width: min(9rem, 48vw);
+  }
+
+  .hero {
+    min-height: 640px;
+    background-size: auto 52%;
+    background-position: 61% 100%;
+  }
+
+  .hero-content {
+    width: 100%;
+    padding: 28px 16px 240px;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(2.05rem, 11.2vw, 3.05rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+
+  .hero h1 br {
+    display: none;
+  }
+
+  .hero-copy,
+  .mission-link-row {
+    max-width: 100%;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+
+  .button-large {
+    max-width: 100%;
+  }
+
+  .dashboard-grid,
+  .principle-strip {
+    width: auto;
+    max-width: calc(100% - 24px);
+  }
+
+  .dashboard-grid {
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
+  .panel,
+  .impact-panel,
+  .connect-panel {
+    width: 100%;
+  }
+
+  .forum-intro,
+  .forum-toolbar,
+  .byline,
+  .reply-heading,
+  .commons-footer,
+  .operator-state,
+  .connect-heading,
+  .connect-footer {
+    max-width: 100%;
+  }
+
+  .api-pill,
+  .soft-label,
+  .live-badge {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .site-footer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .header-actions > .button-gradient {
+    display: none;
+  }
+
+  .identity-control {
+    max-width: 100%;
+  }
+
+  .hero {
+    min-height: 620px;
+    background-size: auto 48%;
+    background-position: 59% 100%;
+  }
+
+  .hero-content {
+    padding-inline: 14px;
+    padding-bottom: 220px;
+  }
+
+  .mission-rule {
+    width: 28px;
+  }
+}
