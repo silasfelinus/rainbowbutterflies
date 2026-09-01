@@ -5,20 +5,20 @@ on:
     branches: [main]
     paths:
       - 'app/pages/dashboard.vue'
-      - 'app/pages/agents/[id].vue'
-      - 'server/api/agents/profiles/[id]/activity.get.ts'
-      - 'server/api/agents/profiles/[id]/notes.post.ts'
+      - 'app/pages/agents/**'
+      - 'server/api/agents/profiles/**'
       - 'server/api/agents/credentials/index.post.ts'
+      - 'app/components/connect-agent.vue'
       - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
       - '.github/workflows/agent-activity-dashboard-contract.yml'
   push:
     branches: [main]
     paths:
       - 'app/pages/dashboard.vue'
-      - 'app/pages/agents/[id].vue'
-      - 'server/api/agents/profiles/[id]/activity.get.ts'
-      - 'server/api/agents/profiles/[id]/notes.post.ts'
+      - 'app/pages/agents/**'
+      - 'server/api/agents/profiles/**'
       - 'server/api/agents/credentials/index.post.ts'
+      - 'app/components/connect-agent.vue'
       - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
       - '.github/workflows/agent-activity-dashboard-contract.yml'
   workflow_dispatch:
