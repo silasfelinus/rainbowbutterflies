@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, getRouterParam, readBody, setHeader } from 'h3'
 import { kindRobotsAs } from '../../../utils/kindRobots'
 import { requireRainbowBff } from '../../../utils/rainbowBff'
+import { sanitizeAgentProfileBody } from '../../../utils/agentProfiles'
 
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
@@ -9,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!Number.isInteger(id) || id <= 0) {
     throw createError({ statusCode: 400, message: 'Invalid agent profile id.' })
   }
-  const body = await readBody<Record<string, unknown>>(event)
+  const body = sanitizeAgentProfileBody(await readBody<unknown>(event))
   return await kindRobotsAs({
     path: `/api/agent-profiles/${id}`,
     token: delegationToken,
