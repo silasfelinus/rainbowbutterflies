@@ -22,11 +22,8 @@ import {
 
 export const PENDING_AUTH_COOKIE = 'rainbow-auth-flow'
 export const SESSION_COOKIE = 'rainbow-session'
+export const DELEGATION_COOKIE = 'rainbow-bff-delegation'
 
-// A stable configured secret preserves sessions across restarts. Until Silas
-// explicitly installs one, the single-container deployment can still use auth:
-// this process-local key simply means a container restart signs everybody out.
-// No secret is written to source, logs, browser storage, or the container image.
 const EPHEMERAL_SESSION_SECRET = crypto.randomBytes(48).toString('base64url')
 
 function getSessionSecret(): string {
@@ -46,6 +43,58 @@ function cookieSecurity() {
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
+  }
+}
+
+function getDelegationKey() {
+  return crypto
+    .createHash('sha256')
+    .update('rainbow-bff-delegation-v1\0')
+    .update(getSessionSecret())
+    .digest()
+}
+
+function sealDelegation(token: string, expiresAt: string): string {
+  const iv = crypto.randomBytes(12)
+  const cipher = crypto.createCipheriv('aes-256-gcm', getDelegationKey(), iv)
+  const plaintext = Buffer.from(JSON.stringify({ token, expiresAt }), 'utf8')
+  const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()])
+  const tag = cipher.getAuthTag()
+
+  return [
+    'v1',
+    iv.toString('base64url'),
+    ciphertext.toString('base64url'),
+    tag.toString('base64url'),
+  ].join('.')
+}
+
+function openDelegation(value: string | undefined): { token: string; expiresAt: string } | null {
+  if (!value) return null
+  const [version, ivText, cipherText, tagText, extra] = value.split('.')
+  if (version !== 'v1' || !ivText || !cipherText || !tagText || extra !== undefined) {
+    return null
+  }
+
+  try {
+    const decipher = crypto.createDecipheriv(
+      'aes-256-gcm',
+      getDelegationKey(),
+      Buffer.from(ivText, 'base64url'),
+    )
+    decipher.setAuthTag(Buffer.from(tagText, 'base64url'))
+    const plaintext = Buffer.concat([
+      decipher.update(Buffer.from(cipherText, 'base64url')),
+      decipher.final(),
+    ]).toString('utf8')
+    const parsed = JSON.parse(plaintext) as { token?: unknown; expiresAt?: unknown }
+    const token = typeof parsed.token === 'string' ? parsed.token.trim() : ''
+    const expiresAt = typeof parsed.expiresAt === 'string' ? parsed.expiresAt : ''
+    const expiry = Date.parse(expiresAt)
+    if (!token || !Number.isFinite(expiry) || expiry <= Date.now()) return null
+    return { token, expiresAt }
+  } catch {
+    return null
   }
 }
 
@@ -148,4 +197,27 @@ export function readRainbowSessionCookie(event: H3Event): RainbowSession | null 
 
 export function clearRainbowSessionCookie(event: H3Event): void {
   deleteCookie(event, SESSION_COOKIE, cookieSecurity())
+}
+
+/**
+ * Store the Kind Robots first-party delegation only in an authenticated,
+ * encrypted HttpOnly cookie. Browser JavaScript never receives the token and
+ * inspecting the cookie reveals only AES-GCM ciphertext.
+ */
+export function setRainbowDelegationCookie(event: H3Event, token: string): void {
+  const cleanToken = token.trim()
+  if (!cleanToken) throw new Error('A first-party delegation token is required.')
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString()
+  setCookie(event, DELEGATION_COOKIE, sealDelegation(cleanToken, expiresAt), {
+    ...cookieSecurity(),
+    maxAge: Math.floor(SESSION_TTL_MS / 1000),
+  })
+}
+
+export function readRainbowDelegationCookie(event: H3Event): string | null {
+  return openDelegation(getCookie(event, DELEGATION_COOKIE))?.token ?? null
+}
+
+export function clearRainbowDelegationCookie(event: H3Event): void {
+  deleteCookie(event, DELEGATION_COOKIE, cookieSecurity())
 }
