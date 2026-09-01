@@ -27,29 +27,30 @@ The existing Kind Robots first-party authorization-code route remains available 
 
 ## Google Cloud Console
 
-Use a **Web application** OAuth client. The existing Kind Robots Google client can be reused if desired; add Rainbow to it rather than creating a second identity silo.
+Use a **Web application** OAuth client. The existing Kind Robots Google client is intentionally reusable: add Rainbow's redirect to that client rather than creating a second identity silo.
 
 Production authorized redirect URIs:
 
 - `https://rainbowbutterflies.org/auth/google/callback`
-- Keep `https://kindrobots.org/api/auth/google/callback` if direct Kind Robots Google sign-in should continue working.
+- Keep `https://kindrobots.org/api/auth/google/callback` so direct Kind Robots Google sign-in continues working.
 
 Useful local-development redirect URI:
 
 - `http://localhost:3000/auth/google/callback`
 
-Authorized JavaScript origins are not required by this server-side redirect flow, but if Google Identity Services browser components are added later, use:
+Authorized JavaScript origins are not required by this server-side redirect flow. If Google Identity Services browser components are added later, useful origins are:
 
 - `https://rainbowbutterflies.org`
 - `http://localhost:3000` for local development
 
-OAuth consent/branding values:
+OAuth consent / Google Auth Platform branding values:
 
-- App name: `Rainbow Butterflies`
+- App name: if the existing Google project also serves direct Kind Robots sign-in, prefer a shared label such as `Kind Robots + Rainbow Butterflies`; if the project is Rainbow-only, `Rainbow Butterflies` is fine.
 - Home page: `https://rainbowbutterflies.org/`
 - Privacy policy: `https://rainbowbutterflies.org/privacy`
+- Terms of service: `https://rainbowbutterflies.org/terms`
 - Authorized domain: `rainbowbutterflies.org`
-- Keep `kindrobots.org` authorized if the same OAuth project/client continues serving Kind Robots.
+- Keep `kindrobots.org` authorized because the same OAuth project/client continues serving Kind Robots.
 
 The production callback is an exact URI. Do not add a trailing slash or substitute `www` unless the application is deliberately changed to use that exact address.
 
