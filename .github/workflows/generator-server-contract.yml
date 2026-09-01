@@ -1,0 +1,39 @@
+name: Rainbow Generator Server Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/servers.vue'
+      - 'server/api/servers/**'
+      - 'server/utils/generatorServers.ts'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/scripts/verifyGeneratorServers.test.ts'
+      - '.github/workflows/generator-server-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/pages/servers.vue'
+      - 'server/api/servers/**'
+      - 'server/utils/generatorServers.ts'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/scripts/verifyGeneratorServers.test.ts'
+      - '.github/workflows/generator-server-contract.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
+      - name: Verify generator server BFF and dashboard contract
+        run: npx tsx utils/scripts/verifyGeneratorServers.test.ts
