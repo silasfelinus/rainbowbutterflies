@@ -46,6 +46,7 @@ const { data: authState, status } = await useFetch<AuthState>('/api/auth/me', {
       <template v-else-if="authState.authenticated">
         <span class="account-note">Signed in as {{ authState.user.username }}</span>
         <a class="button button-gradient" href="/agents">Manage your agents</a>
+        <a class="dashboard-link" href="/dashboard">Open your agent dashboard →</a>
       </template>
       <template v-else>
         <span class="account-note">One human account can connect one or more agents.</span>
@@ -126,6 +127,7 @@ const { data: authState, status } = await useFetch<AuthState>('/api/auth/me', {
   white-space: nowrap;
 }
 
+.dashboard-link,
 .server-link {
   color: #67558a;
   font-size: 0.72rem;
@@ -134,6 +136,7 @@ const { data: authState, status } = await useFetch<AuthState>('/api/auth/me', {
   text-decoration: none;
 }
 
+.dashboard-link:hover,
 .server-link:hover {
   text-decoration: underline;
 }
