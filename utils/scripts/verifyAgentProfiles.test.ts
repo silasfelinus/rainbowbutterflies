@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 const authSession = readFileSync('server/utils/authSession.ts', 'utf8')
 const bff = readFileSync('server/utils/rainbowBff.ts', 'utf8')
 const kindRobots = readFileSync('server/utils/kindRobots.ts', 'utf8')
+const agentProfileBoundary = readFileSync('server/utils/agentProfiles.ts', 'utf8')
 const login = readFileSync('server/api/auth/login.post.ts', 'utf8')
 const register = readFileSync('server/api/auth/register.post.ts', 'utf8')
 const logout = readFileSync('server/api/auth/logout.post.ts', 'utf8')
@@ -66,6 +67,16 @@ for (const source of [...profileRoutes, ...credentialRoutes]) {
   assert.match(source, /kindRobotsAs/)
 }
 
+// Rainbow never forwards arbitrary profile JSON into the canonical backend.
+// Forum-channel preferences are allowed explicitly, while ownership/admin
+// controls remain impossible for browser code to smuggle through this BFF.
+assert.match(agentProfileBoundary, /'forumChannels'/)
+assert.match(agentProfileBoundary, /sanitizeAgentProfileBody/)
+assert.match(agentProfileBoundary, /Unsupported agent profile fields/)
+assert.doesNotMatch(agentProfileBoundary, /'userId'|'isOfficial'|'isAdmin'/)
+assert.match(profileRoutes[1]!, /sanitizeAgentProfileBody/)
+assert.match(profileRoutes[2]!, /sanitizeAgentProfileBody/)
+
 // Agent UI is Rainbow-native and models identity separately from credentials.
 assert.match(agentsPage, /Create its identity/)
 assert.match(agentsPage, /Create agent \+ key/)
@@ -76,11 +87,28 @@ assert.match(agentsPage, /forum:write/)
 assert.match(agentsPage, /forum:thread:create/)
 assert.match(agentsPage, /generation:art/)
 assert.match(agentsPage, /shown once/i)
-assert.match(agentsPage, /Deactivate agent/)
+assert.match(agentsPage, /@click="deactivate\(profile\)"/)
+assert.match(agentsPage, />\s*Deactivate\s*</)
 assert.doesNotMatch(agentsPage, /kindrobots\.org/i)
 assert.doesNotMatch(agentsPage, /\/bots\b|Create or choose an owned Bot/i)
 assert.doesNotMatch(agentsPage, /localStorage|sessionStorage/)
 assert.doesNotMatch(agentsPage, /Authorization:\s*Bearer/i)
+
+// Per-agent forum access is durable profile policy, visually separate from
+// rotatable key capabilities. Safe launch boards are explicit and a newly added
+// backend board cannot silently become selected by default.
+assert.match(agentsPage, /Where this agent may participate/)
+assert.match(agentsPage, /New forum sections are not granted automatically/)
+assert.match(agentsPage, /forumChannels:\s*string\[\]/)
+assert.match(agentsPage, /SAFE_DEFAULT_FORUM_CHANNELS/)
+assert.match(agentsPage, /'introductions'/)
+assert.match(agentsPage, /'humanitarian-goals'/)
+assert.match(agentsPage, /normalizedForumChannels/)
+assert.match(agentsPage, /forumChannels:\s*normalizedForumChannels\(forumChannels\.value\)/)
+assert.match(agentsPage, /forumChannels:\s*normalizedForumChannels\(profile\.forumChannels\)/)
+assert.match(agentsPage, /Key capabilities/)
+assert.match(agentsPage, /Start new threads/)
+assert.match(agentsPage, /Generate art/)
 
 // Homepage stays a gateway rather than re-growing the onboarding manual.
 assert.match(connectGateway, /href="\/agents"/)

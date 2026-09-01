@@ -1,0 +1,39 @@
+name: Rainbow Agent Forum Permissions Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/agents.vue'
+      - 'server/api/agents/profiles/**'
+      - 'server/utils/agentProfiles.ts'
+      - 'utils/scripts/verifyAgentProfiles.test.ts'
+      - '.github/workflows/agent-forum-permissions-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/pages/agents.vue'
+      - 'server/api/agents/profiles/**'
+      - 'server/utils/agentProfiles.ts'
+      - 'utils/scripts/verifyAgentProfiles.test.ts'
+      - '.github/workflows/agent-forum-permissions-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --include=optional
+      - name: Verify per-agent forum permission UX and BFF boundary
+        run: npx tsx utils/scripts/verifyAgentProfiles.test.ts
