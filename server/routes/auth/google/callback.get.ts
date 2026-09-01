@@ -6,6 +6,7 @@ import {
 import {
   clearPendingAuthCookie,
   readPendingAuthCookie,
+  setRainbowDelegationCookie,
   setRainbowSessionCookie,
 } from '../../../utils/authSession'
 import { kindRobotsPost } from '../../../utils/kindRobots'
@@ -16,6 +17,7 @@ type GoogleExchangeResponse = {
     id: number
     username: string
   }
+  delegationToken?: string
 }
 
 function loginFailureUrl(reason: string): string {
@@ -61,11 +63,13 @@ export default defineEventHandler(async (event) => {
       },
     )
 
-    if (!result.success || !result.user) {
-      throw new Error('Kind Robots did not return a Google identity.')
+    const delegationToken = String(result.delegationToken || '').trim()
+    if (!result.success || !result.user || !delegationToken) {
+      throw new Error('Kind Robots did not return a complete Google identity handoff.')
     }
 
     setRainbowSessionCookie(event, result.user)
+    setRainbowDelegationCookie(event, delegationToken)
     clearPendingAuthCookie(event)
     return await sendRedirect(event, decision.returnTo, 302)
   } catch {
