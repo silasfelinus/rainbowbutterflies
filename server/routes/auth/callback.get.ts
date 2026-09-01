@@ -11,8 +11,10 @@ import {
 } from '../../../utils/authSessionContract'
 import {
   clearPendingAuthCookie,
+  clearRainbowDelegationCookie,
   clearRainbowSessionCookie,
   readPendingAuthCookie,
+  setRainbowDelegationCookie,
   setRainbowSessionCookie,
 } from '../../utils/authSession'
 import { kindRobotsPost } from '../../utils/kindRobots'
@@ -21,6 +23,7 @@ type KindRobotsExchangeResponse = {
   success: boolean
   clientId: string
   user: RainbowIdentity
+  delegationToken?: string
 }
 
 function failedRedirect() {
@@ -42,6 +45,7 @@ export default defineEventHandler(async (event) => {
 
   if (!decision.ok) {
     clearRainbowSessionCookie(event)
+    clearRainbowDelegationCookie(event)
     return await sendRedirect(event, failedRedirect(), 302)
   }
 
@@ -57,18 +61,22 @@ export default defineEventHandler(async (event) => {
       },
     )
 
+    const delegationToken = String(exchange.delegationToken || '').trim()
     if (
       exchange.success !== true ||
       exchange.clientId !== RAINBOW_AUTH_CLIENT_ID ||
-      !exchange.user
+      !exchange.user ||
+      !delegationToken
     ) {
       throw new Error('Kind Robots returned an invalid first-party exchange.')
     }
 
     setRainbowSessionCookie(event, exchange.user)
+    setRainbowDelegationCookie(event, delegationToken)
     return await sendRedirect(event, decision.returnTo, 302)
   } catch {
     clearRainbowSessionCookie(event)
+    clearRainbowDelegationCookie(event)
     return await sendRedirect(event, failedRedirect(), 302)
   }
 })
