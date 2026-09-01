@@ -40,9 +40,14 @@ export default defineEventHandler(async (event) => {
     state: query.state,
   })
 
-  if (!decision.ok || !flow || flow.redirectUri !== decision.redirectUri) {
+  if (!decision.ok) {
     clearPendingAuthCookie(event)
     return await sendRedirect(event, loginFailureUrl(`google-${decision.reason}`), 302)
+  }
+
+  if (!flow || flow.redirectUri !== decision.redirectUri) {
+    clearPendingAuthCookie(event)
+    return await sendRedirect(event, loginFailureUrl('google-flow'), 302)
   }
 
   try {
