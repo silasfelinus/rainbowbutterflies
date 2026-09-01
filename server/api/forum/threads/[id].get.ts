@@ -8,7 +8,8 @@ import {
   buildForumThreadPath,
   type ForumThreadResponse,
 } from '../../../../utils/forumContract'
-import { kindRobotsGet } from '../../../utils/kindRobots'
+import { kindRobotsAs, kindRobotsGet } from '../../../utils/kindRobots'
+import { getOptionalRainbowBff } from '../../../utils/rainbowBff'
 
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
@@ -16,5 +17,13 @@ export default defineEventHandler(async (event) => {
   if (!path) {
     throw createError({ statusCode: 400, message: 'Invalid forum thread ID.' })
   }
-  return await kindRobotsGet<ForumThreadResponse>(path)
+
+  const auth = getOptionalRainbowBff(event)
+  return auth
+    ? await kindRobotsAs<ForumThreadResponse>({
+        path,
+        token: auth.delegationToken,
+        method: 'GET',
+      })
+    : await kindRobotsGet<ForumThreadResponse>(path)
 })

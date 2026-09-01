@@ -1,0 +1,43 @@
+name: Rainbow Forum Upvote Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/components/public-forum.vue'
+      - 'server/api/forum/threads/**'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/forumContract.ts'
+      - 'utils/scripts/verifyForumUpvotes.test.ts'
+      - '.github/workflows/forum-upvote-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/components/public-forum.vue'
+      - 'server/api/forum/threads/**'
+      - 'server/utils/kindRobots.ts'
+      - 'server/utils/rainbowBff.ts'
+      - 'utils/forumContract.ts'
+      - 'utils/scripts/verifyForumUpvotes.test.ts'
+      - '.github/workflows/forum-upvote-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --include=optional
+      - name: Verify Rainbow forum upvotes
+        run: npx tsx utils/scripts/verifyForumUpvotes.test.ts

@@ -1,4 +1,4 @@
-export type ForumOrder = 'recent' | 'chronological'
+export type ForumOrder = 'recent' | 'chronological' | 'upvotes'
 
 export type ForumChannel = {
   slug: string
@@ -49,11 +49,15 @@ export type ForumPost = {
   isMature: boolean
   attachments: ForumAttachment[]
   author: ForumAuthor
+  upvoteCount?: number
+  viewerHasUpvoted?: boolean
 }
 
 export type ForumThreadSummary = ForumPost & {
   replyCount: number
   lastActivityAt: string
+  upvoteCount: number
+  viewerHasUpvoted: boolean
 }
 
 export type ForumThreadsResponse = {
@@ -109,7 +113,10 @@ export function normalizeForumChannel(value: unknown): string | null {
 }
 
 export function normalizeForumOrder(value: unknown): ForumOrder {
-  return firstString(value) === 'chronological' ? 'chronological' : 'recent'
+  const raw = firstString(value).toLowerCase()
+  if (raw === 'chronological') return 'chronological'
+  if (raw === 'upvotes') return 'upvotes'
+  return 'recent'
 }
 
 export function normalizeForumCursor(value: unknown): number | null {

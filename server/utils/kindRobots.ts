@@ -49,7 +49,7 @@ export async function kindRobotsPost<T>(
   return response as T
 }
 
-type AuthenticatedMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+type AuthenticatedMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export async function kindRobotsAs<T>(input: {
   path: string
