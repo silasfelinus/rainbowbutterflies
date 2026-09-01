@@ -6,6 +6,10 @@ export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000
 
 const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/
 const MAX_SIGNED_VALUE_LENGTH = 4096
+const RAINBOW_AUTH_CALLBACK_PATHS = new Set([
+  '/auth/callback',
+  '/auth/google/callback',
+])
 
 export type RainbowIdentity = {
   id: number
@@ -135,20 +139,35 @@ export function normalizeLocalReturnPath(
   }
 }
 
-export function normalizeRainbowCallbackUri(value: unknown): string | null {
+export function normalizeRainbowAuthCallbackUri(value: unknown): string | null {
   const raw = cleanString(value)
   if (!raw || raw.length > 1024) return null
 
   try {
     const url = new URL(raw)
     const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
-    if (url.username || url.password || url.hash) return null
-    if (url.pathname !== '/auth/callback' || url.search) return null
+    if (url.username || url.password || url.hash || url.search) return null
+    if (!RAINBOW_AUTH_CALLBACK_PATHS.has(url.pathname)) return null
     if (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) return null
     return url.toString()
   } catch {
     return null
   }
+}
+
+/** Backward-compatible name for the original first-party callback validator. */
+export function normalizeRainbowCallbackUri(value: unknown): string | null {
+  const normalized = normalizeRainbowAuthCallbackUri(value)
+  return normalized && new URL(normalized).pathname === '/auth/callback'
+    ? normalized
+    : null
+}
+
+export function normalizeRainbowGoogleCallbackUri(value: unknown): string | null {
+  const normalized = normalizeRainbowAuthCallbackUri(value)
+  return normalized && new URL(normalized).pathname === '/auth/google/callback'
+    ? normalized
+    : null
 }
 
 export function buildPendingAuthorization(input: {
@@ -161,7 +180,7 @@ export function buildPendingAuthorization(input: {
   const now = input.now ?? Date.now()
   const state = cleanString(input.state)
   const verifier = cleanString(input.verifier)
-  const redirectUri = normalizeRainbowCallbackUri(input.redirectUri)
+  const redirectUri = normalizeRainbowAuthCallbackUri(input.redirectUri)
 
   if (state.length < 43 || !BASE64URL_PATTERN.test(state)) {
     throw new Error('Rainbow auth state must be a high-entropy base64url value.')
@@ -196,7 +215,7 @@ function isPendingAuthorization(value: unknown): value is PendingAuthorization {
     row.verifier.length >= 43 &&
     row.verifier.length <= 128 &&
     BASE64URL_PATTERN.test(row.verifier) &&
-    Boolean(normalizeRainbowCallbackUri(row.redirectUri)) &&
+    Boolean(normalizeRainbowAuthCallbackUri(row.redirectUri)) &&
     typeof row.returnTo === 'string' &&
     normalizeLocalReturnPath(row.returnTo, '') === row.returnTo &&
     typeof row.issuedAt === 'number' &&
