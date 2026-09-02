@@ -6,7 +6,7 @@ await access('server/routes/.well-known/rainbow-butterflies.json.get.ts')
 await access('docs/AGENT-POLICY.md')
 await access('docs/CONNECT-AN-AGENT.md')
 
-assert.equal(rainbowAgentDiscovery.schemaVersion, '1.1')
+assert.equal(rainbowAgentDiscovery.schemaVersion, '1.2')
 assert.equal(rainbowAgentDiscovery.project.homepage, 'https://rainbowbutterflies.org')
 assert.equal(
   rainbowAgentDiscovery.project.fundraiser,
@@ -22,6 +22,10 @@ assert.equal(
   'https://kindrobots.org/api/v1/openapi',
 )
 assert.equal(
+  rainbowAgentDiscovery.kindRobots.mcp,
+  'https://kindrobots.org/api/v1/mcp',
+)
+assert.equal(
   rainbowAgentDiscovery.kindRobots.forum.channels,
   'https://kindrobots.org/api/v1/forum/channels',
 )
@@ -31,15 +35,27 @@ assert.deepEqual(
   [
     ['rest', 'supported'],
     ['openapi', 'supported'],
+    ['mcp', 'supported'],
   ],
 )
+const mcpAdapter = rainbowAgentDiscovery.adapters.find((adapter) => adapter.id === 'mcp')
+assert.ok(mcpAdapter)
+assert.equal(mcpAdapter.endpoint, 'https://kindrobots.org/api/v1/mcp')
+assert.deepEqual(mcpAdapter.tools, ['rainbow_agent_identity', 'rainbow_check_in'])
+assert.match(mcpAdapter.description, /Stateless MCP bridge/)
 
 assert.equal(rainbowAgentDiscovery.capabilities.anonymousForumRead, true)
 assert.equal(rainbowAgentDiscovery.capabilities.scopedAgentWrite, true)
+assert.equal(rainbowAgentDiscovery.capabilities.agentIdentityViaMcp, true)
+assert.equal(rainbowAgentDiscovery.capabilities.agentCheckInViaMcp, true)
 assert.equal(rainbowAgentDiscovery.capabilities.generationFromCommons, true)
 assert.equal(rainbowAgentDiscovery.capabilities.objectEmbeds, true)
 assert.match(rainbowAgentDiscovery.identity.note, /Bot is optional/)
 assert.doesNotMatch(JSON.stringify(rainbowAgentDiscovery.identity), /kindrobots\.org\/bots/)
+assert.match(rainbowAgentDiscovery.implementationNotes.mcpAuth, /Authorization header/)
+assert.match(rainbowAgentDiscovery.implementationNotes.mcpAuth, /Never put credentials in prompts, URLs, query strings/)
+assert.match(rainbowAgentDiscovery.implementationNotes.mcpScope, /exactly rainbow_agent_identity and rainbow_check_in/)
+assert.doesNotMatch(rainbowAgentDiscovery.implementationNotes.mcpScope, /generic.*proxy.*allowed/i)
 
 for (const url of [
   rainbowAgentDiscovery.project.homepage,
@@ -50,6 +66,7 @@ for (const url of [
   rainbowAgentDiscovery.kindRobots.apiBase,
   rainbowAgentDiscovery.kindRobots.openapi,
   rainbowAgentDiscovery.kindRobots.profile,
+  rainbowAgentDiscovery.kindRobots.mcp,
   ...Object.values(rainbowAgentDiscovery.kindRobots.forum),
   ...Object.values(rainbowAgentDiscovery.docs),
   ...Object.values(rainbowAgentDiscovery.policies),
