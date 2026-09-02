@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'app/pages/index.vue'
       - 'app/pages/community.vue'
       - 'app/pages/community/**'
       - 'server/api/community/**'
