@@ -20,6 +20,7 @@ type Quota = {
   sharedAcrossAgents: boolean
 }
 
+type QuotaMode = 'RESOURCE_FREE' | 'FREE_QUOTA' | 'DEFERRED_FREE' | 'PAID_TOKENS'
 type QuotaResponse = { success: boolean; quota?: Quota; message?: string }
 type EnqueueResponse = {
   success: boolean
@@ -27,21 +28,31 @@ type EnqueueResponse = {
   data?: {
     jobId: number
     status: string
-    quotaMode: 'RESOURCE_FREE' | 'FREE_QUOTA' | 'DEFERRED_FREE' | 'PAID_TOKENS'
+    quotaMode: QuotaMode
     quota: Quota | null
     tokens: { charged: number }
   }
 }
-type JobResponse = {
+type JobData = {
+  job: {
+    id: number
+    status: string
+    artImageId: number | null
+    error: string | null
+  }
+}
+type JobResponse = { success: boolean; data?: JobData }
+type ArtImageResponse = {
   success: boolean
   data?: {
-    job: {
-      id: number
-      status: string
-      artImageId: number | null
-      error: string | null
-    }
-  }
+    id: number
+    fileType: string | null
+    imageData: string | null
+    thumbnailData: string | null
+    promptString: string | null
+    isPublic: boolean
+    isMature: boolean
+  } | null
 }
 
 const signedOut = (): AuthState => ({ authenticated: false, user: null, expiresAt: null })
@@ -58,8 +69,9 @@ const isMature = ref(false)
 const submitting = ref(false)
 const message = ref('')
 const errorMessage = ref('')
-const job = ref<JobResponse['data'] extends infer T ? any : never>(null)
-const quotaMode = ref<EnqueueResponse['data'] extends infer T ? any : never>(null)
+const job = ref<JobData | null>(null)
+const quotaMode = ref<QuotaMode | null>(null)
+const generatedImage = ref<NonNullable<ArtImageResponse['data']> | null>(null)
 let pollTimer: ReturnType<typeof setTimeout> | null = null
 
 const quotaPercent = computed(() => {
@@ -70,9 +82,16 @@ const resetLabel = computed(() => {
   if (!quota.value?.resetsAt) return ''
   return new Date(quota.value.resetsAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 })
-const jobStatus = computed(() => job.value?.job?.status ?? '')
+const jobStatus = computed(() => job.value?.job.status ?? '')
 const complete = computed(() => jobStatus.value === 'DONE')
 const failed = computed(() => ['FAILED', 'CANCELLED'].includes(jobStatus.value))
+const imageSource = computed(() => {
+  const raw = generatedImage.value?.imageData || generatedImage.value?.thumbnailData || ''
+  if (!raw) return ''
+  if (raw.startsWith('data:image/')) return raw
+  const fileType = generatedImage.value?.fileType?.replace(/^\./, '') || 'png'
+  return `data:image/${fileType};base64,${raw}`
+})
 
 useSeoMeta({
   title: 'Generate · Rainbow Butterflies',
@@ -97,11 +116,25 @@ async function loadQuota() {
   }
 }
 
+async function loadGeneratedImage(id: number) {
+  try {
+    const result = await $fetch<ArtImageResponse>(`/api/generate/images/${id}`)
+    if (result.success && result.data) generatedImage.value = result.data
+  } catch (error) {
+    errorMessage.value = errorText(error, 'The image finished, but its preview could not be loaded.')
+  }
+}
+
 async function pollJob(id: number) {
   if (pollTimer) clearTimeout(pollTimer)
   try {
     const result = await $fetch<JobResponse>(`/api/generate/jobs/${id}`)
-    if (result.success && result.data) job.value = result.data
+    if (result.success && result.data) {
+      job.value = result.data
+      if (result.data.job.status === 'DONE' && result.data.job.artImageId) {
+        await loadGeneratedImage(result.data.job.artImageId)
+      }
+    }
   } catch (error) {
     errorMessage.value = errorText(error, 'Could not refresh generation status.')
   }
@@ -123,6 +156,7 @@ async function generate() {
   errorMessage.value = ''
   job.value = null
   quotaMode.value = null
+  generatedImage.value = null
   try {
     const result = await $fetch<EnqueueResponse>('/api/generate/krea2/enqueue', {
       method: 'POST',
@@ -136,7 +170,14 @@ async function generate() {
     message.value = result.message
     quotaMode.value = result.data.quotaMode
     if (result.data.quota) quota.value = result.data.quota
-    job.value = { job: { id: result.data.jobId, status: result.data.status, artImageId: null, error: null } }
+    job.value = {
+      job: {
+        id: result.data.jobId,
+        status: result.data.status,
+        artImageId: null,
+        error: null,
+      },
+    }
     await pollJob(result.data.jobId)
     await loadQuota()
   } catch (error) {
@@ -198,7 +239,8 @@ onBeforeUnmount(() => {
           <p class="economy-note">Your daily allowance uses shared local compute, not paid tokens. After your 10 free images are used, additional Krea 2 work uses paid tokens. If the public free pool is full, free work waits in queue instead of silently charging you.</p>
         </div>
 
-        <aside class="result-card">
+        <aside class="result-card" :class="{ 'has-image': Boolean(imageSource) }">
+          <img v-if="imageSource" :src="imageSource" :alt="generatedImage?.promptString || prompt" class="generated-image" />
           <template v-if="job?.job">
             <div class="status-row"><span class="status-dot" :class="jobStatus.toLowerCase()" /><strong>{{ jobStatus }}</strong><small>Job #{{ job.job.id }}</small></div>
             <h2 v-if="complete">Generation complete.</h2>
@@ -206,7 +248,8 @@ onBeforeUnmount(() => {
             <h2 v-else-if="quotaMode === 'DEFERRED_FREE'">Waiting for a free capacity slot.</h2>
             <h2 v-else>Working through the queue.</h2>
             <p v-if="job.job.error" class="error">{{ job.job.error }}</p>
-            <p v-else-if="complete">The finished ArtImage is saved canonically in Kind Robots as image #{{ job.job.artImageId }}. An inline Rainbow result viewer is the next small surface.</p>
+            <p v-else-if="complete && generatedImage">Saved as ArtImage #{{ generatedImage.id }} on your shared Kind Robots account.</p>
+            <p v-else-if="complete">The image is saved as ArtImage #{{ job.job.artImageId }}. Loading its preview…</p>
             <p v-else>{{ message || 'Your request is queued.' }}</p>
           </template>
           <template v-else>
@@ -223,5 +266,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-*{box-sizing:border-box}.generate-shell{min-height:100vh;padding:clamp(16px,3vw,42px);color:#3f4058;background:radial-gradient(circle at 15% 0,rgba(189,232,255,.62),transparent 30rem),radial-gradient(circle at 90% 12%,rgba(246,207,255,.58),transparent 30rem),#f8f7fc}.topbar,.brand,.topbar nav,.hero,.quota-meta,.choices,.status-row{display:flex;align-items:center}.topbar{max-width:1120px;margin:0 auto 38px;justify-content:space-between;gap:16px}.brand{gap:10px;color:inherit;font-weight:950;text-decoration:none}.brand img{width:42px;height:42px;object-fit:contain}.topbar nav{gap:15px}.topbar nav a{color:#6b5a9e;font-size:.76rem;font-weight:850;text-decoration:none}.hero,.studio,.signin-card{max-width:1120px;margin-left:auto;margin-right:auto}.hero{justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:22px}.kicker{margin:0 0 7px;color:#7a5fc0;font-size:.68rem;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.hero h1,.signin-card h1{margin:0;font-size:clamp(3.2rem,10vw,7rem);line-height:.8;letter-spacing:-.065em}.hero>div>p:last-child,.signin-card>p{max-width:610px;color:#707388;line-height:1.6}.quota-card{width:min(330px,100%);padding:18px;border:1px solid rgba(91,76,136,.14);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 15px 40px rgba(77,63,116,.07)}.quota-number strong,.quota-number span{display:block}.quota-number strong{font-size:2.4rem;line-height:1}.quota-number span{margin-top:3px;color:#85879a;font-size:.68rem;font-weight:850;text-transform:uppercase}.meter{height:9px;margin:14px 0 8px;overflow:hidden;border-radius:999px;background:#eeeaf5}.meter span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#76c6ff,#bd82e7)}.quota-meta{justify-content:space-between;gap:10px;color:#8c8e9e;font-size:.64rem}.quota-card p{margin:10px 0 0;color:#765b9f;font-size:.72rem}.studio{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);gap:16px}.composer,.result-card,.signin-card{border:1px solid rgba(91,76,136,.14);border-radius:26px;background:rgba(255,255,255,.92);box-shadow:0 18px 55px rgba(70,57,108,.075)}.composer{padding:clamp(20px,4vw,34px)}.composer>label{display:block;margin-bottom:10px;font-weight:900}.composer textarea{width:100%;min-height:230px;resize:vertical;padding:17px;border:1px solid #ddd6e9;border-radius:18px;background:#fff;color:#41435b;font:inherit;line-height:1.55;outline:none}.composer textarea:focus{border-color:#a77fd1;box-shadow:0 0 0 3px rgba(167,127,209,.12)}.choices{flex-wrap:wrap;gap:17px;margin:14px 0 20px;color:#696c80;font-size:.76rem}.choices label{display:flex;align-items:center;gap:7px}.primary{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border:0;border-radius:999px;background:linear-gradient(135deg,#7768c5,#bd66b1);color:#fff;font-weight:900;text-decoration:none;cursor:pointer}.primary:disabled{opacity:.55;cursor:default}.economy-note{margin:16px 0 0;color:#8a8c9c;font-size:.7rem;line-height:1.55}.result-card{min-width:0;padding:clamp(20px,4vw,32px);display:flex;flex-direction:column;justify-content:center;min-height:390px}.status-row{gap:9px;color:#6c6680;font-size:.75rem}.status-row small{margin-left:auto;color:#a0a0ad}.status-dot{width:10px;height:10px;border-radius:50%;background:#a7a7b4}.status-dot.done{background:#64b886}.status-dot.failed,.status-dot.cancelled{background:#d77d83}.status-dot.running{background:#78aee5}.status-dot.pending{background:#c8a75e}.result-card h2{margin:20px 0 8px;font-size:clamp(1.5rem,4vw,2.2rem)}.result-card p{color:#787b8e;line-height:1.6}.empty-art{width:84px;height:84px;display:grid;place-items:center;border-radius:24px;background:linear-gradient(145deg,#e4f4ff,#f4e2ff);color:#7658ac;font-size:2rem}.page-error,.error{color:#ae4f61}.page-error{max-width:1120px;margin:18px auto 0;padding:12px 15px;border-radius:14px;background:#fff0f2}.signin-card{padding:clamp(24px,6vw,58px)}.signin-card .primary{margin-top:8px}@media(max-width:760px){.generate-shell{padding:14px}.brand span{display:none}.topbar nav{gap:10px}.topbar nav a{font-size:.68rem}.hero{align-items:stretch;flex-direction:column}.quota-card{width:100%}.studio{grid-template-columns:1fr}.result-card{min-height:270px}.choices{align-items:flex-start;flex-direction:column}.hero h1,.signin-card h1{font-size:clamp(3rem,20vw,5rem)}}
+*{box-sizing:border-box}.generate-shell{min-height:100vh;padding:clamp(16px,3vw,42px);color:#3f4058;background:radial-gradient(circle at 15% 0,rgba(189,232,255,.62),transparent 30rem),radial-gradient(circle at 90% 12%,rgba(246,207,255,.58),transparent 30rem),#f8f7fc}.topbar,.brand,.topbar nav,.hero,.quota-meta,.choices,.status-row{display:flex;align-items:center}.topbar{max-width:1120px;margin:0 auto 38px;justify-content:space-between;gap:16px}.brand{gap:10px;color:inherit;font-weight:950;text-decoration:none}.brand img{width:42px;height:42px;object-fit:contain}.topbar nav{gap:15px}.topbar nav a{color:#6b5a9e;font-size:.76rem;font-weight:850;text-decoration:none}.hero,.studio,.signin-card{max-width:1120px;margin-left:auto;margin-right:auto}.hero{justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:22px}.kicker{margin:0 0 7px;color:#7a5fc0;font-size:.68rem;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.hero h1,.signin-card h1{margin:0;font-size:clamp(3.2rem,10vw,7rem);line-height:.8;letter-spacing:-.065em}.hero>div>p:last-child,.signin-card>p{max-width:610px;color:#707388;line-height:1.6}.quota-card{width:min(330px,100%);padding:18px;border:1px solid rgba(91,76,136,.14);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 15px 40px rgba(77,63,116,.07)}.quota-number strong,.quota-number span{display:block}.quota-number strong{font-size:2.4rem;line-height:1}.quota-number span{margin-top:3px;color:#85879a;font-size:.68rem;font-weight:850;text-transform:uppercase}.meter{height:9px;margin:14px 0 8px;overflow:hidden;border-radius:999px;background:#eeeaf5}.meter span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#76c6ff,#bd82e7)}.quota-meta{justify-content:space-between;gap:10px;color:#8c8e9e;font-size:.64rem}.quota-card p{margin:10px 0 0;color:#765b9f;font-size:.72rem}.studio{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);gap:16px}.composer,.result-card,.signin-card{border:1px solid rgba(91,76,136,.14);border-radius:26px;background:rgba(255,255,255,.92);box-shadow:0 18px 55px rgba(70,57,108,.075)}.composer{padding:clamp(20px,4vw,34px)}.composer>label{display:block;margin-bottom:10px;font-weight:900}.composer textarea{width:100%;min-height:230px;resize:vertical;padding:17px;border:1px solid #ddd6e9;border-radius:18px;background:#fff;color:#41435b;font:inherit;line-height:1.55;outline:none}.composer textarea:focus{border-color:#a77fd1;box-shadow:0 0 0 3px rgba(167,127,209,.12)}.choices{flex-wrap:wrap;gap:17px;margin:14px 0 20px;color:#696c80;font-size:.76rem}.choices label{display:flex;align-items:center;gap:7px}.primary{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border:0;border-radius:999px;background:linear-gradient(135deg,#7768c5,#bd66b1);color:#fff;font-weight:900;text-decoration:none;cursor:pointer}.primary:disabled{opacity:.55;cursor:default}.economy-note{margin:16px 0 0;color:#8a8c9c;font-size:.7rem;line-height:1.55}.result-card{min-width:0;padding:clamp(20px,4vw,32px);display:flex;flex-direction:column;justify-content:center;min-height:390px;overflow:hidden}.result-card.has-image{justify-content:flex-start}.generated-image{width:calc(100% + clamp(40px,8vw,64px));max-height:520px;margin:calc(-1 * clamp(20px,4vw,32px)) calc(-1 * clamp(20px,4vw,32px)) 22px;object-fit:contain;background:#eeebf4}.status-row{gap:9px;color:#6c6680;font-size:.75rem}.status-row small{margin-left:auto;color:#a0a0ad}.status-dot{width:10px;height:10px;border-radius:50%;background:#a7a7b4}.status-dot.done{background:#64b886}.status-dot.failed,.status-dot.cancelled{background:#d77d83}.status-dot.running{background:#78aee5}.status-dot.pending{background:#c8a75e}.result-card h2{margin:20px 0 8px;font-size:clamp(1.5rem,4vw,2.2rem)}.result-card p{color:#787b8e;line-height:1.6}.empty-art{width:84px;height:84px;display:grid;place-items:center;border-radius:24px;background:linear-gradient(145deg,#e4f4ff,#f4e2ff);color:#7658ac;font-size:2rem}.page-error,.error{color:#ae4f61}.page-error{max-width:1120px;margin:18px auto 0;padding:12px 15px;border-radius:14px;background:#fff0f2}.signin-card{padding:clamp(24px,6vw,58px)}.signin-card .primary{margin-top:8px}@media(max-width:760px){.generate-shell{padding:14px}.brand span{display:none}.topbar nav{gap:10px}.topbar nav a{font-size:.68rem}.hero{align-items:stretch;flex-direction:column}.quota-card{width:100%}.studio{grid-template-columns:1fr}.result-card{min-height:270px}.choices{align-items:flex-start;flex-direction:column}.hero h1,.signin-card h1{font-size:clamp(3rem,20vw,5rem)}}
 </style>
