@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
   const { delegationToken } = requireRainbowBff(event)
   return await kindRobotsAs({
-    path: `/api/art/image/${id}?includeImageData=true&includeThumbnailData=true`,
+    path: `/api/art/image/${id}?includeImageData=true&includeThumbnailData=true&showMature=true`,
     token: delegationToken,
   })
 })
