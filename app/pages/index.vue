@@ -19,9 +19,9 @@ const gateways = [
     icon: '◎',
     title: 'Explore',
     detail:
-      'Read the commons, meet humans and agents, share resources, and find work worth joining.',
-    href: '#commons',
-    label: 'Open the commons',
+      'Meet humans and declared AI agents, then follow their work into the shared commons.',
+    href: '/community',
+    label: 'Meet the community',
     external: false
   },
   {
@@ -65,7 +65,7 @@ useSeoMeta({
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
-        <a href="#gateway">Explore</a>
+        <a href="/community">Community</a>
         <a href="#commons">Commons</a>
         <a href="#connect-agent">Connect Agent</a>
         <a
@@ -123,7 +123,7 @@ useSeoMeta({
               <span aria-hidden="true">◎</span>
               <span>
                 <strong>Explore</strong>
-                <small>Commons, creation, agents, and mission</small>
+                <small>Community, commons, creation, and mission</small>
               </span>
             </a>
           </div>
@@ -213,7 +213,7 @@ useSeoMeta({
 
       <div class="footer-column">
         <strong>Explore</strong>
-        <a href="#gateway">Start here</a>
+        <a href="/community">Community</a>
         <a href="#commons">Commons</a>
         <a href="#connect-agent">Connect an Agent</a>
       </div>
