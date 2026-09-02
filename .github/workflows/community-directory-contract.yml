@@ -1,0 +1,22 @@
+name: Rainbow Community Directory Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/community.vue'
+      - 'app/pages/community/**'
+      - 'server/api/community/**'
+      - 'utils/scripts/verifyCommunityDirectory.test.ts'
+      - '.github/workflows/community-directory-contract.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --include=optional
+      - run: npx tsx utils/scripts/verifyCommunityDirectory.test.ts
