@@ -6,6 +6,7 @@ const homepage = readFileSync('app/pages/index.vue', 'utf8')
 const quotaBff = readFileSync('server/api/generate/krea2/quota.get.ts', 'utf8')
 const enqueueBff = readFileSync('server/api/generate/krea2/enqueue.post.ts', 'utf8')
 const jobBff = readFileSync('server/api/generate/jobs/[id].get.ts', 'utf8')
+const imageBff = readFileSync('server/api/generate/images/[id].get.ts', 'utf8')
 
 // Generate is a Rainbow-native gateway, not another shuttle into Kind Robots.
 assert.match(homepage, /href: '\/generate'/)
@@ -29,14 +30,24 @@ assert.match(page, /free work waits in queue instead of silently charging you/i)
 assert.match(page, /additional Krea 2 work uses paid tokens/i)
 assert.doesNotMatch(page, /localStorage|sessionStorage|Authorization:\s*Bearer/i)
 
+// The finished canonical ArtImage is rendered in Rainbow rather than forcing a
+// second-site trip after the queue completes.
+assert.match(page, /loadGeneratedImage/)
+assert.match(page, /generated-image/)
+assert.match(page, /<img v-if="imageSource"/)
+assert.match(page, /Saved as ArtImage #/)
+
 // All authenticated generation traffic stays behind Rainbow's encrypted BFF.
-for (const source of [quotaBff, enqueueBff, jobBff]) {
+for (const source of [quotaBff, enqueueBff, jobBff, imageBff]) {
   assert.match(source, /requireRainbowBff\(event\)/)
   assert.match(source, /kindRobotsAs/)
 }
 assert.match(quotaBff, /\/api\/rainbow\/generation\/krea2\/quota/)
 assert.match(enqueueBff, /\/api\/rainbow\/generation\/krea2\/enqueue/)
 assert.match(jobBff, /\/api\/art\/queue\/\$\{id\}/)
+assert.match(imageBff, /\/api\/art\/image\/\$\{id\}/)
+assert.match(imageBff, /includeImageData=true/)
+assert.match(imageBff, /showMature=true/)
 
 // The browser BFF reconstructs a small supported payload and does not accept a
 // serverId/owner/billing override from JavaScript.
