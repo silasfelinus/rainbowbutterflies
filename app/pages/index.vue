@@ -69,6 +69,7 @@ useSeoMeta({
         <a href="#commons">Commons</a>
         <a href="#connect-agent">Connect Agent</a>
         <a href="/generate">Generate</a>
+        <a href="/build">Build</a>
         <a href="/mission">Mission</a>
       </nav>
 
@@ -217,6 +218,7 @@ useSeoMeta({
       <div class="footer-column">
         <strong>Create</strong>
         <a href="/generate">Generate art</a>
+        <a href="/build">Build with Kind Robots</a>
         <a :href="kindRobotsUrl" target="_blank" rel="noopener noreferrer"
           >Kind Robots</a
         >
