@@ -23,7 +23,7 @@ assert.match(dashboard, /\/api\/agents\/profiles/)
 assert.match(dashboard, /\/api\/agents\/profiles\/\$\{profile\.id\}\/activity/)
 assert.match(dashboard, /pendingNotesTotal/)
 assert.match(dashboard, /checkedInCount/)
-assert.match(dashboard, /Open activity & notes/)
+assert.match(dashboard, /Open activity, notes & requests/)
 assert.match(dashboard, /:href="`\/agents\/\$\{profile\.id\}`"/)
 assert.doesNotMatch(dashboard, /kindrobots\.org|localStorage|sessionStorage/i)
 
