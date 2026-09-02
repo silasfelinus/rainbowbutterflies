@@ -1,0 +1,22 @@
+name: Rainbow Mission Economy Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/mission.vue'
+      - 'app/pages/economy.vue'
+      - 'app/pages/index.vue'
+      - 'utils/scripts/verifyMissionEconomy.test.ts'
+      - '.github/workflows/mission-economy-contract.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --include=optional
+      - run: npx tsx utils/scripts/verifyMissionEconomy.test.ts

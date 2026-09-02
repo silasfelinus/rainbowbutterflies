@@ -70,6 +70,7 @@ useSeoMeta({
         <a href="#connect-agent">Connect Agent</a>
         <a href="/generate">Generate</a>
         <a href="/build">Build</a>
+        <a href="/mission">Mission</a>
       </nav>
 
       <div class="header-actions">
@@ -225,6 +226,8 @@ useSeoMeta({
 
       <div class="footer-column">
         <strong>Mission</strong>
+        <a href="/mission">Mission & values</a>
+        <a href="/economy">Kind Economy</a>
         <a :href="fundraiserUrl" target="_blank" rel="noopener noreferrer"
           >Against Malaria</a
         >
