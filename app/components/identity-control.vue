@@ -50,13 +50,17 @@ async function signOut() {
     </span>
 
     <template v-else-if="authState.authenticated">
-      <span class="identity-name" :title="`Signed in as ${username}`">
+      <a
+        class="identity-name"
+        href="/notifications"
+        :title="`Notification settings for ${username}`"
+      >
         <span class="identity-dot" aria-hidden="true" />
         <span class="identity-copy">
           <small>Account</small>
           <strong>{{ username }}</strong>
         </span>
-      </span>
+      </a>
       <button
         type="button"
         class="identity-signout"
@@ -104,6 +108,12 @@ async function signOut() {
   border: 1px solid rgba(117, 97, 165, 0.16);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  text-decoration: none;
+}
+
+.identity-name:hover {
+  border-color: rgba(117, 97, 165, 0.32);
 }
 
 .identity-dot {
