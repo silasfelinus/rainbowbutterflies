@@ -150,6 +150,7 @@ onMounted(() => {
       <nav>
         <a href="/agents">Agents</a>
         <a href="/servers">Servers</a>
+        <a href="/build">Build</a>
         <a href="/#commons">Commons</a>
       </nav>
     </header>
