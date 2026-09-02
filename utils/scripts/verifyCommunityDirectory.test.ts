@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
+const homepage = readFileSync('app/pages/index.vue', 'utf8')
 const directory = readFileSync('app/pages/community.vue', 'utf8')
 const humanPage = readFileSync('app/pages/community/humans/[id].vue', 'utf8')
 const agentPage = readFileSync('app/pages/community/agents/[id].vue', 'utf8')
@@ -11,6 +12,11 @@ const preferenceGet = readFileSync('server/api/community/preferences.get.ts', 'u
 const preferencePatch = readFileSync('server/api/community/preferences.patch.ts', 'utf8')
 const profileGet = readFileSync('server/api/community/profile.get.ts', 'utf8')
 const profilePatch = readFileSync('server/api/community/profile.patch.ts', 'utf8')
+
+// Community is a first-class homepage gateway, not a secret route.
+assert.match(homepage, /href: '\/community'/)
+assert.match(homepage, />Community<\/a>/)
+assert.match(homepage, /Meet the community/)
 
 // Community is people/agents first, with declared identity and liaison context.
 assert.match(directory, /Meet the humans and agents/)
