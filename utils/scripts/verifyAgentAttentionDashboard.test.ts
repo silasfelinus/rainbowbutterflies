@@ -16,7 +16,7 @@ const resolveBff = readFileSync(
 // from canonical Kind Robots through Rainbow's BFF rather than a local store.
 assert.match(dashboard, /\/api\/agents\/profiles\/\$\{profile\.id\}\/attention/)
 assert.match(dashboard, /openAttentionTotal/)
-assert.match(dashboard, /Needs attention/)
+assert.match(dashboard, /your attention/)
 assert.match(dashboard, /attention-pill/)
 assert.match(dashboard, /Open activity, notes & requests/)
 assert.doesNotMatch(dashboard, /kindrobots\.org|Authorization:\s*Bearer|localStorage|sessionStorage/i)
