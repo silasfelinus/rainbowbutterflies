@@ -8,6 +8,7 @@ on:
       - 'app/pages/agents/**'
       - 'server/api/agents/profiles/**'
       - 'server/api/agents/credentials/index.post.ts'
+      - 'server/api/dashboard/workspace.get.ts'
       - 'app/components/connect-agent.vue'
       - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
       - '.github/workflows/agent-activity-dashboard-contract.yml'
@@ -18,6 +19,7 @@ on:
       - 'app/pages/agents/**'
       - 'server/api/agents/profiles/**'
       - 'server/api/agents/credentials/index.post.ts'
+      - 'server/api/dashboard/workspace.get.ts'
       - 'app/components/connect-agent.vue'
       - 'utils/scripts/verifyAgentActivityDashboard.test.ts'
       - '.github/workflows/agent-activity-dashboard-contract.yml'
@@ -39,5 +41,5 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --include=optional
-      - name: Verify agent activity and notes dashboard
+      - name: Verify agent activity and full human workspace
         run: npx tsx utils/scripts/verifyAgentActivityDashboard.test.ts
