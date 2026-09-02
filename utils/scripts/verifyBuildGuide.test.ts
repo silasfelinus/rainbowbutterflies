@@ -18,6 +18,8 @@ assert.match(page, /\/api\/v1\/forum\/threads/)
 assert.match(page, /\/api\/v1\/forum\/posts\/123\/generate-art/)
 assert.match(page, /\/api\/v1\/openapi/)
 assert.match(page, /\.well-known\/rainbow-butterflies\.json/)
+assert.match(page, /profileResponseExample/)
+assert.match(page, /Response shape/)
 
 // Current forum attachment support is intentionally explicit. Do not imply every
 // Kind Robots model is already embeddable through the v1 forum contract.
@@ -27,6 +29,7 @@ assert.match(page, /CHARACTER/)
 assert.doesNotMatch(page, /kind:\s*['"](?:DREAM|SCENARIO|REWARD)['"]/)
 assert.match(page, /at most two canonical references today/i)
 assert.match(page, /Only active, public objects can be attached/i)
+assert.match(page, /numeric IDs as durable references/i)
 
 // The guide teaches capability separation and keeps generation economics honest.
 assert.match(page, /profile:read/)
