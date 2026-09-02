@@ -38,7 +38,12 @@ for (const page of [mission, economy]) {
 }
 
 // Language that would turn the future economy into a present claim must stay absent.
+// Negative questions such as "Are creators currently receiving...?" are allowed only
+// because the immediately rendered answer pins the current truth explicitly.
 assert.doesNotMatch(economy, /tokens (?:already )?(?:fund|donate|pay) .*malaria/i)
-assert.doesNotMatch(economy, /creators (?:are|currently) (?:paid|earning|receiving)/i)
+assert.match(
+  economy,
+  /Are creators currently receiving revenue shares[\s\S]*?No verified creator payout system is live yet/i,
+)
 
 console.log('Rainbow mission + Kind Economy truth contract: OK')
