@@ -1,0 +1,22 @@
+name: Rainbow Build Guide Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/pages/build.vue'
+      - 'app/pages/index.vue'
+      - 'app/pages/dashboard.vue'
+      - 'utils/scripts/verifyBuildGuide.test.ts'
+      - '.github/workflows/build-guide-contract.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --include=optional
+      - run: npx tsx utils/scripts/verifyBuildGuide.test.ts
