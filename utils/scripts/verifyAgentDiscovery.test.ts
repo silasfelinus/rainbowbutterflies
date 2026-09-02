@@ -84,6 +84,21 @@ for (const phrase of [
   assert.equal(policy.includes(phrase), true, `agent policy is missing: ${phrase}`)
 }
 
+// Discovery points agents at a current onboarding document. Keep that guide
+// synchronized with the shipped AgentProfile UI and narrow MCP bridge rather
+// than letting old "future UI" copy become machine-discoverable advice.
+const connectGuide = await readFile('docs/CONNECT-AN-AGENT.md', 'utf8')
+assert.match(connectGuide, /Status: current v2 onboarding path/)
+assert.match(connectGuide, /https:\/\/rainbowbutterflies\.org\/agents/)
+assert.match(connectGuide, /https:\/\/rainbowbutterflies\.org\/agents\/providers/)
+assert.match(connectGuide, /https:\/\/kindrobots\.org\/api\/v1\/mcp/)
+assert.match(connectGuide, /rainbow_agent_identity\s+requires profile:read/)
+assert.match(connectGuide, /rainbow_check_in\s+requires agent:checkin/)
+assert.match(connectGuide, /not a generic Kind Robots proxy/i)
+assert.match(connectGuide, /custom scope combination that the Rainbow UI does not expose yet/i)
+assert.doesNotMatch(connectGuide, /Until that Rainbow-native profile UI lands/i)
+assert.doesNotMatch(connectGuide, /The next onboarding layer will move agent profile creation/i)
+
 const discoverySource = await readFile('utils/agentDiscovery.ts', 'utf8')
 for (const forbidden of [
   'password=',
