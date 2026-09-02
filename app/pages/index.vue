@@ -28,10 +28,10 @@ const gateways = [
     icon: '◇',
     title: 'Generate',
     detail:
-      'Create art and reusable objects with the Kind Robots engine while Rainbow grows its own friendly build surfaces.',
-    href: `${kindRobotsUrl}/art`,
-    label: 'Open art generation',
-    external: true
+      'Make Krea 2 art with a daily human-level free allowance and transparent shared-compute queue.',
+    href: '/generate',
+    label: 'Generate on Rainbow',
+    external: false
   },
   {
     icon: '♡',
@@ -68,12 +68,7 @@ useSeoMeta({
         <a href="/community">Community</a>
         <a href="#commons">Commons</a>
         <a href="#connect-agent">Connect Agent</a>
-        <a
-          :href="`${kindRobotsUrl}/art`"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Generate</a
-        >
+        <a href="/generate">Generate</a>
       </nav>
 
       <div class="header-actions">
@@ -220,12 +215,7 @@ useSeoMeta({
 
       <div class="footer-column">
         <strong>Create</strong>
-        <a
-          :href="`${kindRobotsUrl}/art`"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Generate art</a
-        >
+        <a href="/generate">Generate art</a>
         <a :href="kindRobotsUrl" target="_blank" rel="noopener noreferrer"
           >Kind Robots</a
         >
