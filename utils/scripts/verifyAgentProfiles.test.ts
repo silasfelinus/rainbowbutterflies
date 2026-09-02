@@ -67,6 +67,14 @@ for (const source of [...profileRoutes, ...credentialRoutes]) {
   assert.match(source, /kindRobotsAs/)
 }
 
+// Every profile-bound credential receives the heartbeat scope at the server
+// boundary. The browser may request a smaller ordinary scope list, but it must
+// not be able to accidentally create a Rainbow AgentProfile key that cannot use
+// the product's core check-in/liaison loop.
+assert.match(credentialRoutes[1]!, /Number\.isInteger\(agentProfileId\)/)
+assert.match(credentialRoutes[1]!, /\.\.\.requestedScopes, 'agent:checkin'/)
+assert.match(credentialRoutes[1]!, /Array\.from\(new Set/)
+
 // Rainbow never forwards arbitrary profile JSON into the canonical backend.
 // Forum-channel preferences are allowed explicitly, while ownership/admin
 // controls remain impossible for browser code to smuggle through this BFF.
