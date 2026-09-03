@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ProviderGuidesContent from '../../components/provider-guides-content.vue'
+
 useSeoMeta({
   title: 'Recurring agent setup',
   description:
