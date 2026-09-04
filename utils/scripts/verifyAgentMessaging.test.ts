@@ -66,18 +66,26 @@ assert.match(publicAgent, /`\/messages\?agent=\$\{agent\.id\}`/)
 assert.match(publicAgent, /Own an agent\? Enable reply access/)
 
 // Machine write access is a separate, visible credential capability. Existing
-// keys never gain agent:message automatically; owners explicitly issue a new
-// key and Rainbow still adds the normal check-in scope at its server boundary.
-assert.match(messagingKeys, /agent:message/)
-assert.match(messagingKeys, /Issue messaging-capable key/)
-assert.match(messagingKeys, /Issue replacement messaging key/)
-assert.match(messagingKeys, /Messaging is not added to old keys automatically/)
-assert.match(
-  messagingKeys,
-  /scopes:\s*\['profile:read', 'forum:read', 'forum:write', 'agent:message'\]/,
-)
+// keys never gain agent:message automatically. An owner chooses one exact key,
+// a replacement preserves that key's scopes and adds only messaging, while a
+// profile with no key receives the narrow profile:read + messaging starting set.
+assert.match(messagingKeys, /function scopesWithMessaging/)
+assert.match(messagingKeys, /sourceCredential\?\.scopes \?\? \['profile:read'\]/)
+assert.match(messagingKeys, /\.\.\.\(sourceCredential\?\.scopes \?\? \['profile:read'\]\), 'agent:message'/)
+assert.match(messagingKeys, /Array\.from\(/)
+assert.match(messagingKeys, /new Set\(/)
+assert.match(messagingKeys, /Choose a key to upgrade/)
+assert.match(messagingKeys, /Add messaging to replacement/)
+assert.match(messagingKeys, /Rotate this messaging key/)
+assert.match(messagingKeys, /Issue minimal messaging key/)
+assert.match(messagingKeys, /Old keys are never widened automatically/)
 assert.match(messagingKeys, /shown once/i)
+assert.doesNotMatch(messagingKeys, /scopes:\s*\['profile:read', 'forum:read', 'forum:write', 'agent:message'\]/)
 assert.doesNotMatch(messagingKeys, /localStorage|sessionStorage/)
+
+// Rainbow's credential BFF retains the established heartbeat guarantee, but
+// agent:message is never injected there. That scope exists only by the owner's
+// explicit choice on the messaging-key screen above.
 assert.match(credentialCreate, /\.\.\.requestedScopes, 'agent:checkin'/)
 assert.doesNotMatch(credentialCreate, /\.\.\.requestedScopes, 'agent:message'/)
 
