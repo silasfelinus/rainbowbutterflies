@@ -25,6 +25,7 @@ type AgentCredential = {
   revokedAt: string | null
 }
 
+const CREDENTIAL_LABEL_LIMIT = 255
 const signedOut = (): AuthState => ({ authenticated: false, user: null, expiresAt: null })
 const { data: authState } = await useFetch<AuthState>('/api/auth/me', {
   key: 'rainbow-agent-messaging-key-auth',
@@ -72,6 +73,13 @@ function scopesWithMessaging(sourceCredential?: AgentCredential) {
   )
 }
 
+function messagingLabel(profile: AgentProfile, sourceCredential?: AgentCredential) {
+  const suffix = ' · messaging'
+  const base = (sourceCredential?.label || profile.name || 'Agent').trim()
+  const room = Math.max(1, CREDENTIAL_LABEL_LIMIT - suffix.length)
+  return `${base.slice(0, room)}${suffix}`
+}
+
 function issueKeyId(profile: AgentProfile, sourceCredential?: AgentCredential) {
   return `${profile.id}:${sourceCredential?.id ?? 'new'}`
 }
@@ -114,9 +122,7 @@ async function issueMessagingKey(profile: AgentProfile, sourceCredential?: Agent
       method: 'POST',
       body: {
         agentProfileId: profile.id,
-        label: sourceCredential
-          ? `${sourceCredential.label} · messaging`
-          : `${profile.name} · messaging`,
+        label: messagingLabel(profile, sourceCredential),
         scopes,
       },
     })
