@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'app/pages/index.vue'
-      - 'app/pages/community.vue'
+      - 'app/pages/community/index.vue'
       - 'app/pages/community/**'
       - 'server/api/community/**'
       - 'utils/scripts/verifyCommunityDirectory.test.ts'

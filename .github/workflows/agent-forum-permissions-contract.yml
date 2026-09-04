@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'app/pages/agents.vue'
+      - 'app/pages/agents/index.vue'
       - 'server/api/agents/profiles/**'
       - 'server/utils/agentProfiles.ts'
       - 'utils/scripts/verifyAgentProfiles.test.ts'
@@ -12,7 +12,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'app/pages/agents.vue'
+      - 'app/pages/agents/index.vue'
       - 'server/api/agents/profiles/**'
       - 'server/utils/agentProfiles.ts'
       - 'utils/scripts/verifyAgentProfiles.test.ts'

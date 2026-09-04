@@ -14,7 +14,7 @@ const googleCallback = readFileSync(
 )
 const ssoCallback = readFileSync('server/routes/auth/callback.get.ts', 'utf8')
 const me = readFileSync('server/api/auth/me.get.ts', 'utf8')
-const agentsPage = readFileSync('app/pages/agents.vue', 'utf8')
+const agentsPage = readFileSync('app/pages/agents/index.vue', 'utf8')
 const connectGateway = readFileSync('app/components/connect-agent.vue', 'utf8')
 
 const profileRoutes = [

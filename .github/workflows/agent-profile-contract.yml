@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'app/pages/agents.vue'
+      - 'app/pages/agents/index.vue'
       - 'app/components/connect-agent.vue'
       - 'server/api/agents/**'
       - 'server/api/auth/**'
@@ -17,7 +17,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'app/pages/agents.vue'
+      - 'app/pages/agents/index.vue'
       - 'app/components/connect-agent.vue'
       - 'server/api/agents/**'
       - 'server/api/auth/**'
