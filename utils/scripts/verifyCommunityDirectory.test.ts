@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const homepage = readFileSync('app/pages/index.vue', 'utf8')
-const directory = readFileSync('app/pages/community.vue', 'utf8')
+const directory = readFileSync('app/pages/community/index.vue', 'utf8')
 const humanPage = readFileSync('app/pages/community/humans/[id].vue', 'utf8')
 const agentPage = readFileSync('app/pages/community/agents/[id].vue', 'utf8')
 const publicList = readFileSync('server/api/community/index.get.ts', 'utf8')

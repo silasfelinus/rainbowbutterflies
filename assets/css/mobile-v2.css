@@ -41,7 +41,7 @@ body,
   min-width: 0;
 }
 
-.hero-content,
+.site-shell .hero-content,
 .panel,
 .impact-panel,
 .gateway-section,
@@ -209,12 +209,12 @@ code,
 
 /* Tablet art direction: keep the butterflies present, but let copy own the upper field. */
 @media (max-width: 980px) {
-  .hero {
+  .site-shell .hero {
     background-size: auto 62%;
     background-position: 64% 104%;
   }
 
-  .hero-content {
+  .site-shell .hero-content {
     padding-right: 24px;
   }
 
@@ -275,34 +275,34 @@ code,
     max-width: min(9rem, 48vw);
   }
 
-  .hero {
+  .site-shell .hero {
     min-height: 640px;
     background-size: auto 52%;
     background-position: 61% 100%;
   }
 
-  .hero-content {
+  .site-shell .hero-content {
     width: 100%;
     padding: 28px 16px 240px;
   }
 
-  .hero h1 {
+  .site-shell .hero h1 {
     max-width: 100%;
     font-size: clamp(2.05rem, 11.2vw, 3.05rem);
     line-height: 1;
     letter-spacing: -0.055em;
   }
 
-  .hero h1 br {
+  .site-shell .hero h1 br {
     display: none;
   }
 
-  .hero-copy,
+  .site-shell .hero-copy,
   .mission-link-row {
     max-width: 100%;
   }
 
-  .hero-actions {
+  .site-shell .hero-actions {
     width: 100%;
   }
 
@@ -380,13 +380,13 @@ code,
     max-width: 100%;
   }
 
-  .hero {
+  .site-shell .hero {
     min-height: 620px;
     background-size: auto 48%;
     background-position: 59% 100%;
   }
 
-  .hero-content {
+  .site-shell .hero-content {
     padding-inline: 14px;
     padding-bottom: 220px;
   }
