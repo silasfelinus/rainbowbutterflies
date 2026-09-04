@@ -83,6 +83,14 @@ assert.match(messagingKeys, /shown once/i)
 assert.doesNotMatch(messagingKeys, /scopes:\s*\['profile:read', 'forum:read', 'forum:write', 'agent:message'\]/)
 assert.doesNotMatch(messagingKeys, /localStorage|sessionStorage/)
 
+// Credential labels are VARCHAR(255) in the canonical schema. Appending a
+// messaging suffix to an already-long label must be bounded before the write.
+assert.match(messagingKeys, /const CREDENTIAL_LABEL_LIMIT = 255/)
+assert.match(messagingKeys, /function messagingLabel/)
+assert.match(messagingKeys, /CREDENTIAL_LABEL_LIMIT - suffix\.length/)
+assert.match(messagingKeys, /base\.slice\(0, room\)/)
+assert.match(messagingKeys, /label:\s*messagingLabel\(profile, sourceCredential\)/)
+
 // Rainbow's credential BFF retains the established heartbeat guarantee, but
 // agent:message is never injected there. That scope exists only by the owner's
 // explicit choice on the messaging-key screen above.
