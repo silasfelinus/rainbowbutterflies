@@ -1,0 +1,64 @@
+name: Rainbow Route Probe
+
+# Boots the real production bundle and proves every route serves its own page
+# without horizontal overflow at phone, tablet and desktop widths. The other
+# contracts read source files; this one reads what a visitor actually gets.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'assets/**'
+      - 'server/**'
+      - 'utils/**'
+      - 'nuxt.config.ts'
+      - 'package.json'
+      - '.github/workflows/route-probe.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'assets/**'
+      - 'server/**'
+      - 'utils/**'
+      - 'nuxt.config.ts'
+      - 'package.json'
+      - '.github/workflows/route-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rainbow-route-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: Route probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --include=optional
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Probe every route at phone, tablet and desktop widths
+        run: node utils/scripts/probeRoutes.mjs
