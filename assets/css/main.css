@@ -141,6 +141,23 @@ img {
   color: #7d50de;
 }
 
+/*
+ * Tap targets. Every page's topbar links are ~14px tall text with no padding,
+ * well under the 24px minimum a thumb can hit reliably (the 2026-09-04
+ * acceptance pass measured them on every route). Vertical padding on the link
+ * itself keeps the row's layout and colour rules, which live in each page's
+ * scoped styles, untouched.
+ */
+.topbar nav a,
+.desktop-nav a,
+.page-footer a,
+.build-footer a,
+.footer-column a,
+.sources a,
+.join-strip a {
+  padding-block: 6px;
+}
+
 .header-actions {
   display: flex;
   justify-content: flex-end;
