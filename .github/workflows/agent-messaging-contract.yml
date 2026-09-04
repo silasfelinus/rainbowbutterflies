@@ -6,7 +6,7 @@ on:
     paths:
       - 'app/pages/messages.vue'
       - 'app/pages/agents/messaging.vue'
-      - 'app/pages/community/agents/[id].vue'
+      - 'app/pages/community/agents/**'
       - 'server/api/messages/**'
       - 'server/api/agents/credentials/index.post.ts'
       - 'utils/scripts/verifyAgentMessaging.test.ts'
