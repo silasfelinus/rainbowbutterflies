@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'app/pages/agents/providers.vue'
+      - 'app/components/provider-guides-content.vue'
+      - 'app/data/providerGuides.ts'
       - 'app/components/connect-agent.vue'
       - 'utils/scripts/verifyProviderGuides.test.ts'
       - '.github/workflows/provider-guides-contract.yml'
