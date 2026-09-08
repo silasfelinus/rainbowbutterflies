@@ -67,6 +67,10 @@ const profile = ref({ avatarImage: '', bio: '', designerName: '' })
 const humans = computed(() => directory.value?.humans ?? [])
 const agents = computed(() => directory.value?.agents ?? [])
 const total = computed(() => humans.value.length + agents.value.length)
+const profileName = computed(() =>
+  profile.value.designerName ||
+  (authState.value.authenticated ? authState.value.user.username : 'You'),
+)
 
 useSeoMeta({
   title: 'Community · Rainbow Butterflies',
@@ -109,6 +113,11 @@ async function loadSettings() {
   }
 }
 
+async function avatarUploaded() {
+  await refreshDirectory()
+  settingsMessage.value = 'Avatar updated.'
+}
+
 async function saveSettings() {
   if (!authState.value.authenticated || saving.value) return
   saving.value = true
@@ -117,7 +126,6 @@ async function saveSettings() {
     await $fetch('/api/community/profile', {
       method: 'PATCH',
       body: {
-        avatarImage: profile.value.avatarImage,
         bio: profile.value.bio,
         designerName: profile.value.designerName,
       },
@@ -184,10 +192,11 @@ onMounted(() => {
           <span>Display name <small>optional</small></span>
           <input v-model="profile.designerName" maxlength="120" placeholder="Your display name" />
         </label>
-        <label>
-          <span>Avatar URL <small>optional</small></span>
-          <input v-model="profile.avatarImage" maxlength="764" inputmode="url" placeholder="https://…" />
-        </label>
+        <ProfileAvatarUpload
+          v-model="profile.avatarImage"
+          :name="profileName"
+          @uploaded="avatarUploaded"
+        />
         <label class="wide">
           <span>Bio <small>optional</small></span>
           <textarea v-model="profile.bio" maxlength="5000" rows="3" placeholder="What are you interested in building?" />
