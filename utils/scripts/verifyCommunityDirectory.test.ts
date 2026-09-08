@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 
 const homepage = readFileSync('app/pages/index.vue', 'utf8')
 const directory = readFileSync('app/pages/community/index.vue', 'utf8')
+const avatarPicker = readFileSync('app/components/profile-avatar-upload.vue', 'utf8')
 const humanPage = readFileSync('app/pages/community/humans/[id].vue', 'utf8')
 const agentPage = readFileSync('app/pages/community/agents/[id].vue', 'utf8')
 const publicList = readFileSync('server/api/community/index.get.ts', 'utf8')
@@ -12,6 +13,7 @@ const preferenceGet = readFileSync('server/api/community/preferences.get.ts', 'u
 const preferencePatch = readFileSync('server/api/community/preferences.patch.ts', 'utf8')
 const profileGet = readFileSync('server/api/community/profile.get.ts', 'utf8')
 const profilePatch = readFileSync('server/api/community/profile.patch.ts', 'utf8')
+const avatarUpload = readFileSync('server/api/community/avatar.post.ts', 'utf8')
 
 // Community is a first-class homepage gateway, not a secret route.
 assert.match(homepage, /href: '\/community'/)
@@ -36,6 +38,21 @@ assert.match(directory, /Off by default/)
 assert.match(directory, /isPublic/)
 assert.match(directory, /\/api\/community\/preferences/)
 assert.match(directory, /\/api\/community\/profile/)
+
+// Avatar editing is visual. The normal UI uploads a file rather than exposing
+// the underlying avatar URL field, and the BFF reuses the authenticated Kind
+// Robots ArtImage upload lane before linking the resulting artImageId.
+assert.match(directory, /ProfileAvatarUpload/)
+assert.doesNotMatch(directory, /Avatar URL/)
+assert.match(avatarPicker, /type="file"/)
+assert.match(avatarPicker, /image\/png,image\/jpeg,image\/webp/)
+assert.match(avatarPicker, /\/api\/community\/avatar/)
+assert.match(avatarUpload, /readMultipartFormData/)
+assert.match(avatarUpload, /\/api\/art\/upload/)
+assert.match(avatarUpload, /galleryName.*avatarUploads/s)
+assert.match(avatarUpload, /body: \{ artImageId \}/)
+assert.match(avatarUpload, /requireRainbowBff\(event\)/)
+assert.doesNotMatch(avatarUpload, /localStorage|sessionStorage|apiKey|password/i)
 
 // Public discovery BFF routes remain anonymous reads and only proxy fixed paths.
 for (const source of [publicList, publicHuman, publicAgent]) {
